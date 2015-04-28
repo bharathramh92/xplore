@@ -22,28 +22,47 @@
             android:gravity="center"/>
 
 
-        <ListView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="6"
-            android:id="@+id/facebookFriendsLocationListView"
             android:background="@color/bright_foreground_disabled_material_dark"
             android:layout_margin="@dimen/mainLayoutPadding"
-            android:paddingLeft="@dimen/details_padding"/>
+            android:paddingLeft="@dimen/details_padding">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/facebookFriendsLocationListView"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/facebook_not_logged_in_msg"
+                android:id="@+id/notLoggedInTextView"
+                android:layout_gravity="center" />
 
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/login_button"
-            android:layout_width="wrap_content"
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="30dp" >
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
 
 
-
-        </LinearLayout>
+    </LinearLayout>
 
 
 </FrameLayout>

@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -84,18 +85,23 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
     LocationListener mLocListener;
     Location mLocation;
     Boolean  viewCreated = false, friendsDataRetrieved = false;
-
+    LoginButton facebookLogBtn;
+    TextView notLoggedInText;
+    ListView listView;
+    ArrayList data;
+    NearByFriendsAdapter adapter;
 
     public void friendsListReq(){
         Profile profile = Profile.getCurrentProfile();
 
         if(profile!=null){
             Log.d("facebooklogin", "Accessing from id: "+profile.getId());
+        }else{
+            return;
         }
 
         GraphRequest request ;
-
-        request = GraphRequest.newMyFriendsRequest(successToken, new GraphRequest.GraphJSONArrayCallback() {
+        request = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
             @Override
             public void onCompleted(JSONArray jsonArray, GraphResponse graphResponse) {
                 if(jsonArray!=null){
@@ -111,13 +117,14 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                     b.putDouble("latitude",queryAddress.getLatitude() );
                     b.putDouble("longitude",queryAddress.getLongitude() );
                     b.putSerializable("fbIds", fbIds);
-                    b.putParcelable("AccessToken", successToken);
+                    b.putParcelable("AccessToken", AccessToken.getCurrentAccessToken());
                     new PopulateNearByFriendsAsync(FaceBookLogin.this).execute(b);
 
                 }
             }
         });
         request.executeAsync();
+        Log.d("facebooklogin", "here");
 
     }
 
@@ -146,6 +153,58 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_face_book_login, container, false);
+        notLoggedInText = (TextView) view.findViewById(R.id.notLoggedInTextView);
+        listView = (ListView) view.findViewById(R.id.facebookFriendsLocationListView);
+
+        listView.setVisibility(View.GONE);
+
+        LoginButton facebookLogBtn = (LoginButton) view.findViewById(R.id.login_button);
+        facebookLogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Profile.getCurrentProfile() == null) {
+                    Log.d("facebookLoginCV", "Login pressed");
+                    ParseFacebookUtils.logInWithReadPermissionsInBackground(FaceBookLogin.this,
+                            new ArrayList<String>() {{add("user_friends");}}, new LogInCallback() {
+                                @Override
+                                public void done(ParseUser user, ParseException err) {
+                                    if (user == null) {
+                                        notLoggedInText.setVisibility(View.VISIBLE);
+                                        listView.setVisibility(View.GONE);
+                                        data.clear();
+                                        if(adapter!=null){
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                        Log.d("facebookLoginCV", "Logout pressed");
+                                        ParseUser.logOut();
+                                        dispName();
+                                        Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
+                                    } else if (user.isNew()) {
+
+
+//                    successToken = user.getSessionToken();
+//                    successToken = user.get
+                                        Log.d("MyApp", "User signed up and logged in through Facebook!");
+                                    } else {
+//                    successToken = user.getSessionToken();
+
+                                        dispName();
+                                        Log.d("MyApp", "User logged in through Facebook!");
+                                    }
+                                }
+                            });
+
+                }else{
+                    Log.d("facebookLoginCV", "Logout pressed here");
+                    notLoggedInText.setVisibility(View.VISIBLE);
+                    listView.setVisibility(View.GONE);
+                    ParseUser.logOut();
+                    dispName();
+                }
+            }
+        });
+
+
 
         return view;
     }
@@ -174,8 +233,10 @@ public void dispName(){
         TextView tx = (TextView) getView().findViewById(R.id.facebookTextView);
         if(Profile.getCurrentProfile()!=null) {
             tx.setText("Welcome, " + Profile.getCurrentProfile().getName());
+            friendsListReq();
         }else{
             tx.setText("Welcome");
+            Log.d("facebookLogin", "disp name profile was null");
         }
     }catch (Exception e){
         e.printStackTrace();
@@ -185,45 +246,20 @@ public void dispName(){
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<String> s = new ArrayList<>();
-        s.add("user_friends");
-        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, s, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException err) {
-                if (user == null) {
-
-                    Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
-                } else if (user.isNew()) {
-
-                    dispName();
-//                    successToken = user.getSessionToken();
-//                    successToken = user.get
-                    Log.d("MyApp", "User signed up and logged in through Facebook!");
-                } else {
-//                    successToken = user.getSessionToken();
-
-                    dispName();
-                    Log.d("MyApp", "User logged in through Facebook!");
-                }
-            }
-        });
 
 
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         /* FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-*/
-
-
-       tracker = new AccessTokenTracker() {
+*/          tracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken old, AccessToken accessToken) {
-                Log.d("facebooklogin", "access changed "+ accessToken);
+                Log.d("facebookloginoncreate", "access changed "+ accessToken);
                 successToken = accessToken;
                 Profile.fetchProfileForCurrentAccessToken();
-                Log.d("facebookLogin", "profile is  "+ Profile.getCurrentProfile());
-                friendsListReq();
+                Log.d("facebookloginoncreate", "profile is  "+ Profile.getCurrentProfile());
+
             }
         };
 
@@ -233,12 +269,12 @@ public void dispName(){
             @Override
             protected void onCurrentProfileChanged( Profile oldProfile, Profile currentProfile) {
 
-                Log.d("facebooklogin", "profile is "+ currentProfile + "getcurrent profile is "+ Profile.getCurrentProfile());
+                Log.d("facebookloginoncreate", "profile is "+ currentProfile + "getcurrent profile is "+ Profile.getCurrentProfile());
                 if(currentProfile!=null){
-                    Log.d("facebookloginProfilePic",currentProfile.getProfilePictureUri(100,100)+" is the pic");
+                    Log.d("facebookloginoncreate",currentProfile.getProfilePictureUri(100,100)+" is the pic");
                 }else{
 
-                    Log.d("facebooklogin", "profile was null");
+                    Log.d("facebookloginoncreate", "profile was null");
                 }
 
             }
@@ -273,6 +309,22 @@ public void dispName(){
             return true;
         }else{
             return false;
+        }
+    }
+
+
+    @Override
+    public void nearByFriendsDataRetrieved(ArrayList data) {
+        this.data = data;
+        if(data!=null && data.size()>0){
+            Log.d("facebookLogindata", data.toString());
+            notLoggedInText.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+            adapter = new NearByFriendsAdapter(getActivity(), R.layout.friends_nearby_details_container, data);
+            listView.setAdapter(adapter);
+
+        }else{
+            Log.d("facebookLoginData", "Data was null");
         }
     }
 
@@ -327,7 +379,7 @@ public void dispName(){
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
             }
-            }
+        }
 
 
 //        GPS_PROVIDER
@@ -401,18 +453,6 @@ public void dispName(){
         }
     }
 
-    @Override
-    public void nearByFriendsDataRetrieved(ArrayList data) {
-        if(data!=null && data.size()>0){
-            Log.d("facebookLogindata", data.toString());
-            ListView listView = (ListView) getView().findViewById(R.id.facebookFriendsLocationListView);
-            NearByFriendsAdapter adapter = new NearByFriendsAdapter(getActivity(), R.layout.friends_nearby_details_container, data);
-            listView.setAdapter(adapter);
-
-        }else{
-
-        }
-    }
 
     /**
      * This interface must be implemented by activities that contain this
