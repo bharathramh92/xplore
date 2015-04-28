@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.bharathramh.xplore.MainViewFragment"
+    android:background="@color/button_material_light"
+    android:orientation="vertical">
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mainLayoutSearchHeight"
+        android:id="@+id/searchLocation"
+        android:layout_margin="@dimen/mainLayoutPadding"
+        android:hint="@string/searchHint"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingLeft="@dimen/mainLayoutSearchPadding"
+        android:background="@color/bright_foreground_disabled_material_dark"
+        android:inputType="text"
+        android:imeOptions="actionSearch"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mainLayoutSearchHeight"
+        android:background="@color/bright_foreground_disabled_material_dark"
+        android:layout_margin="@dimen/mainLayoutPadding"
+        android:paddingLeft="@dimen/mainLayoutSearchPadding"
+        android:id="@+id/currentPlace"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/abc_text_size_large_material"
+
+        />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainlistview"
+        android:background="@color/bright_foreground_disabled_material_dark"
+        android:layout_margin="@dimen/mainLayoutPadding"
+        android:paddingLeft="@dimen/mainLayoutSearchPadding"/>
+
+
+</LinearLayout>

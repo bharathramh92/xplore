@@ -1,0 +1,72 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.example.bharathramh.xplore.SignIn">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/intro_sign_in"
+        android:id="@+id/signInIntro"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/signInIntroTopMargin"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/signInPlusMargin"
+            android:layout_weight="1" />
+
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:ems="10"
+            android:maxLength="3"
+            android:id="@+id/signInCountryCode"
+            android:layout_weight="1.5"
+            android:gravity="center"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:ems="10"
+            android:id="@+id/signInPhoneNumber"
+            android:hint="@string/sign_in_hint"
+            android:layout_weight="6"
+            android:gravity="center"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".2"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ok_sign_in"
+            android:id="@+id/signInOK"
+            android:layout_weight="2" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".2"/>
+
+    </LinearLayout>
+
+
+
+
+</FrameLayout>

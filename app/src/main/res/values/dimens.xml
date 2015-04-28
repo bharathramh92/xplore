@@ -1,0 +1,19 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="signInInfoMargin">10dp</dimen>
+    <dimen name="signInPlusMargin">5dp</dimen>
+    <dimen name="signInIntroTopMargin">30dp</dimen>
+    <dimen name="mainLayoutPadding">10dp</dimen>
+    <dimen name="mainLayoutSearchHeight">50dp</dimen>
+    <dimen name="mainLayoutSearchPadding">25dp</dimen>
+    <dimen name="mainViewEachHeight">35dp</dimen>
+    <dimen name="mainViewSpaceHeight">5dp</dimen>
+
+    <dimen name="rest_list_container_height">100dp</dimen>
+    <dimen name="friends_list_container_height">80dp</dimen>
+
+    <dimen name="details_padding">10dp</dimen>
+
+</resources>

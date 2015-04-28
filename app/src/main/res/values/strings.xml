@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">xplore</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="intro_sign_in">Please confirm your phone number</string>
+    <string name="ok_sign_in">OK</string>
+    <string name="sign_in_hint">Phone Number</string>
+    <string name="code_ver_hint">4 digit Code</string>
+    <string name="code_ver_conf_button">Confirm</string>
+    <string name="searchHint">Enter a location</string>
+
+    <string name="mainViewTextInitial">Near me</string>
+
+    <string name="googleKey">AIzaSyBrob9bJTHXDr1gQookO5RgWhYNbE4Rwww</string>
+    
+    <string-array name="mainArray">
+
+        <item>Restaurants</item>
+        <item>Hotels</item>
+        <item>Friends Nearby</item>
+        <item>Attractions</item>
+
+    </string-array>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_facebook_login">FacebookLoginActivity</string>
+    facebook_app_id
+    <string name="facebook_app_id">800970843305317</string>
+</resources>
