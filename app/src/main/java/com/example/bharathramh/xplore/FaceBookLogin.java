@@ -124,6 +124,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
             }
         });
         request.executeAsync();
+        notLoggedInText.setText(getResources().getString(R.string.facebook_loading_data));
         Log.d("facebooklogin", "here");
 
     }
@@ -170,6 +171,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                                 public void done(ParseUser user, ParseException err) {
                                     if (user == null) {
                                         notLoggedInText.setVisibility(View.VISIBLE);
+                                        notLoggedInText.setText(getResources().getString(R.string.facebook_not_logged_in_msg));
                                         listView.setVisibility(View.GONE);
                                         data.clear();
                                         if(adapter!=null){
@@ -197,6 +199,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                 }else{
                     Log.d("facebookLoginCV", "Logout pressed here");
                     notLoggedInText.setVisibility(View.VISIBLE);
+                    notLoggedInText.setText(getResources().getString(R.string.facebook_not_logged_in_msg));
                     listView.setVisibility(View.GONE);
                     ParseUser.logOut();
                     dispName();
@@ -324,6 +327,7 @@ public void dispName(){
             listView.setAdapter(adapter);
 
         }else{
+            notLoggedInText.setText(getResources().getString(R.string.facebook_no_friends_present));
             Log.d("facebookLoginData", "Data was null");
         }
     }
