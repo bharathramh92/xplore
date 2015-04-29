@@ -364,7 +364,7 @@ public void dispName(){
 
         Log.d("facebookLogin", "onResume");
 
-        String currentProvider = LocationManager.NETWORK_PROVIDER;
+        /*String currentProvider = LocationManager.NETWORK_PROVIDER;
         if(currentProvider==null || currentProvider.equals("")){
             currentProvider = LocationManager.GPS_PROVIDER;
             if(currentProvider==null || currentProvider.equals("")) {
@@ -383,7 +383,7 @@ public void dispName(){
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
             }
-        }
+        }*/
 
 
 //        GPS_PROVIDER
@@ -450,7 +450,7 @@ public void dispName(){
                 }
             };
 
-            Log.d("facebookLoginLoc", "using "+currentProvider);
+//            Log.d("facebookLoginLoc", "using "+currentProvider);
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER , 0, 25000, mLocListener);
 
 

@@ -5,20 +5,51 @@
     android:background="@color/button_material_light"
     android:orientation="vertical">
 
-
-    <EditText
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="@dimen/mainLayoutSearchHeight"
-        android:id="@+id/searchLocation"
-        android:layout_margin="@dimen/mainLayoutPadding"
-        android:hint="@string/searchHint"
-        android:gravity="center_vertical"
-        android:maxLines="1"
-        android:paddingLeft="@dimen/mainLayoutSearchPadding"
         android:background="@color/bright_foreground_disabled_material_dark"
-        android:inputType="text"
-        android:imeOptions="actionSearch"/>
+        android:layout_margin="@dimen/mainLayoutPadding">
 
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_options"
+            android:id="@+id/options"
+            android:layout_gravity="center"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent"
+            android:id="@+id/searchLocation"
+            android:hint="@string/searchHint"
+            android:maxLines="1"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:gravity="center_vertical"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_gps_search"
+            android:id="@+id/gpsImage"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search"
+            android:id="@+id/searchImage"
+            android:layout_gravity="center"/>
+
+
+    </LinearLayout>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="@dimen/mainLayoutSearchHeight"
@@ -38,6 +69,8 @@
         android:background="@color/bright_foreground_disabled_material_dark"
         android:layout_margin="@dimen/mainLayoutPadding"
         android:paddingLeft="@dimen/mainLayoutSearchPadding"/>
+
+
 
 
 </LinearLayout>
