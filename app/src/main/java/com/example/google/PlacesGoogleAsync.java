@@ -54,27 +54,10 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
     protected String doInBackground(String... params) {
 
         String searchTerm = params[0];
-       /* HashMap<String, String> hMap = new HashMap<>();
-        hMap.put(ConstantsGoogle.ADDRESS , params[0]);
-        hMap.put(ConstantsGoogle.KEY, ConstantsGoogle.GOOGLE_KEY);
-        try {
-            HttpURLConnection geoCodeCon = RequestParams.setupConnection("GET",
-                    ConstantsGoogle.GOOGLE_API_GEOCODE_URL, hMap);
-            String temp = "";
-            StringBuilder sb = new StringBuilder();
-            BufferedReader reader = new BufferedReader( new InputStreamReader(geoCodeCon.getInputStream()) );
-            while((temp=reader.readLine())!=null){
-                sb.append(temp);
-            }
-            Log.d("places google", " geocode data is " + sb.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-
 
         Double latitude = location.getLatitude();
         Double longitude = location.getLongitude();
+
         if(location.hasLatitude() == true && location.hasLongitude() == true){
             HashMap<String, String> hMap = new HashMap<>();
             hMap.put(ConstantsGoogle.LOCATION , location.getLatitude()+","+location.getLongitude());

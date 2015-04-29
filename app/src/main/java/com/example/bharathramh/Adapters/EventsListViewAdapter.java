@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.bharathramh.StorageClassCollection.Event;
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
 import com.example.bharathramh.xplore.R;
 import com.example.google.ConstantsGoogle;
@@ -18,18 +19,19 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
- * Created by bharathramh on 4/15/15.
+ * Created by bharathramh on 4/28/15.
  */
-public class RestaurantListViewAdapter extends ArrayAdapter {
+
+
+public class EventsListViewAdapter extends ArrayAdapter {
 
     Context mContext;
     int mResource;
-    ArrayList<GooglePlacesCS> objects;
+    ArrayList<Event> objects;
 
-    public RestaurantListViewAdapter(Context context, int resource, ArrayList objects) {
+    public EventsListViewAdapter(Context context, int resource, ArrayList objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mResource = resource;
@@ -43,49 +45,43 @@ public class RestaurantListViewAdapter extends ArrayAdapter {
             holder = new Holder();
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(mResource , parent, false);
-            holder.icon = (ImageView) convertView.findViewById(R.id.imageViewRestaurantContainer);
-            holder.rating = (TextView) convertView.findViewById(R.id.ratingRestaurantContainer);
-            holder.vicinity = (TextView) convertView.findViewById(R.id.vicinityRestaurantContainer);
-            holder.title = (TextView) convertView.findViewById(R.id.nameRestaurantContainer);
+            holder.icon = (ImageView) convertView.findViewById(R.id.imageViewEventsContainer);
+            holder.startTime = (TextView) convertView.findViewById(R.id.startTimeEventContainer);
+            holder.vicinity = (TextView) convertView.findViewById(R.id.vicinityEventContainer);
+            holder.title = (TextView) convertView.findViewById(R.id.nameEventContainer);
             convertView.setTag(holder);
         }
-        GooglePlacesCS current = objects.get(position);
+        Event current = objects.get(position);
         holder = (Holder) convertView.getTag();
         ImageView icon = holder.icon;
-        if(current.getPhotoReference()!=null && current.getPhotoReference()!="") {
-            HashMap<String, String> tmp = new HashMap<>();
-            tmp.put("key",ConstantsGoogle.GOOGLE_KEY);
-            tmp.put("photoreference", current.getPhotoReference());
-            tmp.put("maxheight","400");
-            String photoUrl = RequestParams.getEncodedUrl(ConstantsGoogle.GOOGLE_API_PLACES_PHOTO, tmp);
-            Log.d("restAdapter", photoUrl);
+
+        if(current.getImage_url()!=null && current.getImage_url()!="") {
             int ht_px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, mContext.getResources().getDisplayMetrics());
             int wt_px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, mContext.getResources().getDisplayMetrics());
-            Picasso.with(mContext).load(photoUrl).resize(ht_px,wt_px).into(icon);
+            Picasso.with(mContext).load(current.getImage_url()).resize(ht_px, wt_px).into(icon);
         }else{
             icon.setImageResource(R.drawable.no_image);
         }
 
-        TextView title, rating, vicinity;
+        TextView title, startTime, vicinity;
         title = holder.title;
-        rating = holder.rating;
+        startTime = holder.startTime;
         vicinity = holder.vicinity;
 
         title.setText(current.getName());
-        String s;
-        if(current.getRating()!=null){
-            s = current.getRating().toString();
-        }else{
-            s="Not Available";
+
+        if(current.getStart_time() != null && !current.getStart_time().equals("null")) {
+            startTime.setText(current.getStart_time().toString());
         }
-        rating.setText("Rating : "+s);
-        vicinity.setText("near "+current.getVicinity());
+        if(current.getVenue_address() != null && !current.getVenue_address().equals("null")) {
+            vicinity.setText("near " + current.getVenue_address());
+        }
         return convertView;
     }
 
     public static class Holder{
         ImageView icon;
-        TextView title, rating, vicinity;
+        TextView title, startTime, vicinity;
     }
 
 }

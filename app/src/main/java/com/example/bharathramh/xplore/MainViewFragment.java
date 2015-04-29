@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bharathramh.Adapters.MainListViewAdapter;
+import com.example.bharathramh.StorageClassCollection.Event;
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
 import com.example.google.GoogleGeoLocAsync;
 import com.example.google.PlacesGoogleAsync;
@@ -38,7 +39,8 @@ import java.util.ArrayList;
  * {@link MainViewFragment.MainViewOnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.GoogleGeoLocListener, PlacesGoogleAsync.GooglePlacesInterface{
+public class MainViewFragment extends Fragment implements EventsAsyncTask.EventsListener,
+        GoogleGeoLocAsync.GoogleGeoLocListener, PlacesGoogleAsync.GooglePlacesInterface{
 
     private MainViewOnFragmentInteractionListener mListener;
 
@@ -136,9 +138,14 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
 
-                }else if(position==5){
+                }else if(position==4){
 //                    PlacesGoogleAsync placesAsync = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
 //                    placesAsync.execute(constants.GOOGLE_MOVIES);
+                    EventsAsyncTask eventsAsync = new EventsAsyncTask(MainViewFragment.this, currectSearchLocation);
+                    eventsAsync.execute(constants.EVENTS_CATEGORY);
+                }else if(position==5){
+                    PlacesGoogleAsync placesAsync = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
+                    placesAsync.execute(constants.GOOGLE_MOVIES);
                 }
             }
         });
@@ -258,11 +265,22 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
         }
     }
 
-        public interface MainViewOnFragmentInteractionListener {
+    @Override
+    public void eventsDataRetrieved(ArrayList<Event> eventsList) {
+
+        if(eventsList != null && eventsList.size() >0){
+            Log.d("mainviewfrag", eventsList.toString());
+            mListener.callEventsFrag(eventsList);
+        }
+
+    }
+
+    public interface MainViewOnFragmentInteractionListener {
         // TODO: Update argument type and name
 
         public void callRestFrag(ArrayList<GooglePlacesCS> result);
         public void callFriendsActivity(Address location);
+        public void callEventsFrag(ArrayList result);
     }
 
 }

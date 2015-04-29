@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainActivity extends ActionBarActivity implements FaceBookLogin.OnFragmentInteractionListener,
+public class MainActivity extends ActionBarActivity implements EventsListFragment.OnFragmentInteractionListener,
+        FaceBookLogin.OnFragmentInteractionListener,
         RestaurantFragment.RestaurantFragListener,
         PlacesGoogleAsync.GooglePlacesInterface, MainViewFragment.MainViewOnFragmentInteractionListener
          {
@@ -92,8 +93,18 @@ public class MainActivity extends ActionBarActivity implements FaceBookLogin.OnF
                 .commit();
     }
 
+     @Override
+     public void callEventsFrag(ArrayList result) {
+         EventsListFragment f = EventsListFragment.instance(result);
 
-    @Override
+         getSupportFragmentManager().beginTransaction().
+                 replace(R.id.mainContainer, f , MainActivity.FACEBOOK_FRAG)
+                 .addToBackStack(null)
+                 .commit();
+     }
+
+
+             @Override
     public void placesQueryListener(ArrayList<GooglePlacesCS> result, String statusCode, String nextTokenString) {
         if(result!=null && statusCode.equals("OK") && result.size()>0) {
             Log.d("mainActivity", result.toString());
@@ -165,6 +176,10 @@ public class MainActivity extends ActionBarActivity implements FaceBookLogin.OnF
     }
 
 
+     @Override
+     public void OnEventsFragInteractionListener(Uri uri) {
+
+     }
 }
 
 /*

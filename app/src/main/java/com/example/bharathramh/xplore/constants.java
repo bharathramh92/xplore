@@ -18,4 +18,11 @@ public class constants {
     public static String GOOGLE_HOTEL = "lodging";
     public static String GOOGLE_MOVIES = "movie_theater";
 
+    public static String EVENTS_BASE_URL="http://api.eventful.com/json/events/search";
+    public static String EVENTS_APP_KEY="RqQG3M8gv8mDK7xc";
+    public static String APP_KEY_STRING = "app_key";
+    public static String EVENTS_CATEGORY = "music,sports";
+//            "science" technology outdoors_recreation performing_arts support art comedy
+//            ;
+
 }
