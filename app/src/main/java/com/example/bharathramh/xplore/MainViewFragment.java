@@ -2,6 +2,7 @@ package com.example.bharathramh.xplore;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,8 +62,10 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
     boolean firstTime;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    ProgressDialog progressDialog;
 
-    public static String[] mainItemsLists = {"Eateries", "Hotels", "Attractions", "Friends NearBy", "Events", "Movies"};
+    public static String[] mainItemsLists;
+//    = {"Eateries", "Hotels", "Attractions", "Friends", "Events", "Movies"};
     String searchLocation="";
     String dispText;
     ImageView search, gpsImg, optionsImg;
@@ -78,6 +81,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
         firstTime = true;
         mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) getActivity().findViewById(R.id.left_drawer);
+        mainItemsLists = getResources().getStringArray(R.array.mainMenuItemArray);
     }
 
 
@@ -112,6 +116,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
                 @Override
                 public void onLocationChanged(Location location) {
                     Log.d("mainviewfrag", "on loc changed " + location);
+                    progressDialog.dismiss();
                     Address address = new Address(Locale.getDefault());
                     address.setLatitude(location.getLatitude());
                     address.setLongitude(location.getLongitude());
@@ -138,6 +143,12 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
             Log.d("mainviewfrag" , mLocationManager.getProviders(true) + " ");
             mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mLocListener, null);
 //            mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage(getActivity().getResources().getString(R.string.loading_location));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
         }
     }
 

@@ -13,13 +13,13 @@
 
     <string name="googleKey">AIzaSyBrob9bJTHXDr1gQookO5RgWhYNbE4Rwww</string>
     
-    <string-array name="itemArray">
+    <string-array name="drawerItemArray">
 
         <item>Home</item>
         <item>Eateries</item>
         <item>Hotels</item>
         <item>Attractions</item>
-        <item>Friends NearBy</item>
+        <item>Friends</item>
         <item>Events</item>
         <item>Movies</item>
         <item>Settings</item>
@@ -27,6 +27,21 @@
         <item>Terms and Condition</item>
 
     </string-array>
+
+    <string-array name="mainMenuItemArray">
+
+        <item>Eateries</item>
+        <item>Hotels</item>
+        <item>Attractions</item>
+        <item>Friends</item>
+        <item>Events</item>
+        <item>Movies</item>
+
+    </string-array>
+
+    <string name="loading_location">Retrieving location. Please Wait.</string>
+    <string name="loading_data">Retrieving data. Please Wait.</string>
+    <string name="loading_friends">Retrieving friends data. Please Wait.</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,5 +1,6 @@
 package com.example.google;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
+import com.example.bharathramh.xplore.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ public class GoogleGeoLocAsync extends AsyncTask<String , Void, Address> {
 
     GoogleGeoLocListener mListener;
     Context mContext;
+    ProgressDialog progressDialog;
 
     public GoogleGeoLocAsync (GoogleGeoLocListener listener, Context context){
         this.mListener = (GoogleGeoLocListener) listener;
@@ -26,8 +29,19 @@ public class GoogleGeoLocAsync extends AsyncTask<String , Void, Address> {
     }
 
     @Override
+    protected void onPreExecute() {
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setMessage(mContext.getResources().getString(R.string.loading_location));
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        super.onPreExecute();
+    }
+
+    @Override
     protected void onPostExecute(Address address) {
 //        Log.d("geoLocAsync", address.toString());
+        progressDialog.dismiss();
         mListener.geoLocListener(address);
 
         super.onPostExecute(address);

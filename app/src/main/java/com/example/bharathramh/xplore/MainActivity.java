@@ -2,15 +2,9 @@ package com.example.bharathramh.xplore;
 
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Address;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -19,8 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -29,11 +21,8 @@ import android.widget.Toast;
 import com.example.bharathramh.StorageClassCollection.Event;
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
 import com.example.google.PlacesGoogleAsync;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity implements EventsAsyncTask.EventsListener,
@@ -42,7 +31,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
         RestaurantFragment.RestaurantFragListener,
         PlacesGoogleAsync.GooglePlacesInterface, MainViewFragment.MainViewOnFragmentInteractionListener
         {
-            public static String HOME_FRAG="Hotels";
+            public static String HOME_FRAG="Home";
             public static String EATERIES_FRAG="Eateries";
             public static String ATTRACTIONS_FRAG="Attractions";
             public static String HOTELS_FRAG="Hotels";
@@ -58,13 +47,14 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             Address currentSearchLocation;
             private ActionBarDrawerToggle mDrawerToggle;
             public String currentFragment, nextFragment;
+            Toast toast;
 
             @Override
             protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.activity_main);
 
-                mItemTitles = getResources().getStringArray(R.array.itemArray);
+                mItemTitles = getResources().getStringArray(R.array.drawerItemArray);
     //            String[] mItemTitles = {"Eateries", "Hotels", "Attractions", "Friends NearBy", "Events", "Movies"};
                 mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
                 mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -94,10 +84,8 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
              private void ItemSelected(AdapterView<?> parent, View view, int position, long id) {
                  String selectedOption = parent.getItemAtPosition(position).toString();
 
-
-
                  if(currentSearchLocation != null) {
-
+                     Log.d("mainactivity", "current frag is "+ currentFragment + " selectedOption is "+selectedOption);
                      if(!currentFragment.equals(HOME_FRAG) && !currentFragment.equals(selectedOption)){
                          Log.d("mainactivity", "back stack count "+ getSupportFragmentManager().getBackStackEntryCount());
                          if(getSupportFragmentManager().getBackStackEntryCount()>0){
@@ -116,6 +104,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                              break;
 
                          case "Eateries":
+
                              if (currentFragment.equals(EATERIES_FRAG)){
                                 break;
                          }
@@ -140,7 +129,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                              placesAsyncA.execute(constants.GOOGLE_ATTRACTIONS, ATTRACTIONS_FRAG);
                              nextFragment = ATTRACTIONS_FRAG;
                              break;
-                         case "Friends NearBy":
+                         case "Friends":
                              if (currentFragment.equals(FACEBOOK_FRAG)){
                                  break;
                              }
@@ -175,7 +164,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                              if (currentFragment.equals(EVENTS_FRAG)){
                                  break;
                              }
-                             EventsAsyncTask eventsAsync = new EventsAsyncTask(MainActivity.this, currentSearchLocation);
+                             EventsAsyncTask eventsAsync = new EventsAsyncTask(MainActivity.this, MainActivity.this, currentSearchLocation);
                              eventsAsync.execute(constants.EVENTS_CATEGORY);
                              nextFragment = EVENTS_FRAG;
                              break;
@@ -186,6 +175,15 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                              PlacesGoogleAsync placesAsyncM = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
                              placesAsyncM.execute(constants.GOOGLE_MOVIES, MOVIES_FRAG);
                              nextFragment = MOVIES_FRAG;
+                             break;
+                         case "Settings":
+                             //start Settings intent
+                             break;
+                         case "Feedback":
+                             //start Feedback intent
+                             break;
+                         case "Terms and Condition":
+                             //start Terms and Condition intent
                              break;
                      }
 
@@ -241,66 +239,14 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                          Log.d("mainActivity", "Error while calling error method in main frag");
                          e.printStackTrace();
                      }
+                 }else if(result != null && result.size() == 0){
+                     Log.d("mainactivity", "Zero results");
+                     toast = Toast.makeText(this, "No data to show", Toast.LENGTH_SHORT);
+                     if(toast != null && toast.getView().getVisibility() != View.VISIBLE){
+                         toast.show();
+                     }
                  }
-
              }
-
-             /*@Override
-            public void placesQueryListener(ArrayList<GooglePlacesCS> result, String statusCode, String nextTokenString) {
-                if(result!=null && statusCode.equals("OK") && result.size()>0) {
-                    Log.d("mainActivity", result.toString());
-                    Log.d("mainActivity", "status Code" + statusCode + "nextToken" + nextTokenString);
-
-                    RestaurantFragment restFrag = RestaurantFragment.instance(result);
-
-                    getSupportFragmentManager().beginTransaction().
-                            replace(R.id.mainContainer, restFrag, MainActivity.RESTAURANT_FRAG)
-                            .addToBackStack(null)
-                            .commit();
-
-        //            Log.d("main",getFragmentManager().getBackStackEntryCount()+"");
-
-                    data = result;
-
-
-                }else if(!statusCode.equals("OK")){
-                    try{
-
-                        showToast(statusCode);
-
-        //                Toast.makeText(MainActivity.this, "here", Toast.LENGTH_SHORT).show();
-        //                (getFragmentManager().findFragmentByTag(MainActivity.MAIN_FRAG).onResume();
-        //                getFragmentManager().beginTransaction().show(getFragmentManager().findFragmentByTag(MAIN_FRAG));
-        *//*
-                       *//**//**//**//* Bundle b = new Bundle();
-                        b.putString("statusCode", statusCode);
-                        ((MainViewFragment)(getFragmentManager().findFragmentByTag(MainActivity.MAIN_FRAG)))
-                                .setArguments(b);
-
-
-                        Log.d("mainactivity", "frag count "+getFragmentManager().getBackStackEntryCount());
-        //                ((MainViewFragment)(getFragmentManager().findFragmentByTag(MainActivity.MAIN_FRAG))).ErrorOccured(statusCode);
-                        Log.d("mainActivity", "Calling error method in main frag");
-                        ((MainViewFragment)getFragmentManager().findFragmentByTag(MainActivity.MAIN_FRAG)).ErrorOccured(statusCode);*//*
-                    }catch (Exception e){
-                        Log.d("mainActivity", "Error while calling error method in main frag");
-                        e.printStackTrace();
-                    }
-                }
-            }*/
-
-           /* public void showToast(String statusCode){
-                if(statusCode.equals("OVER_QUERY_LIMIT") || statusCode.equals("REQUEST_DENIED") || statusCode.equals("INVALID_REQUEST")){
-                    Log.d("mainFrag", statusCode);
-                    Toast.makeText(MainActivity.this, "Please try again later", Toast.LENGTH_SHORT).show();
-                }else if(statusCode.equals("ZERO_RESULTS")){
-                    Log.d("mainFrag", "ZERO_RESULTS");
-                    Toast.makeText(MainActivity.this, "No results for the given location", Toast.LENGTH_SHORT).show();
-                }else{
-                    Log.d("mainfrag", statusCode + " is the status code");
-                }
-            }*/
-
             @Override
             public void onBackPressed() {
                 if(mDrawerLayout.isDrawerOpen(mDrawerList)){

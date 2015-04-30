@@ -1,6 +1,7 @@
 package com.example.google;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import com.example.JSON.GoogleJSONUtils;
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
+import com.example.bharathramh.xplore.R;
 import com.example.support.RequestParams;
 import com.google.android.gms.location.places.Places;
 
@@ -34,6 +36,7 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
     Address location;
     String statusCode=""; String nextPageToken="";
     String from;
+    ProgressDialog progressDialog;
 
     public PlacesGoogleAsync(GooglePlacesInterface listener, Context context, Address loc) {
         this.mListener = (GooglePlacesInterface) listener;
@@ -43,12 +46,23 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
 
     @Override
     protected void onPostExecute(String sb) {
+        progressDialog.dismiss();
         if(sb!=null) {
             mListener.placesQueryListener(GoogleJSONUtils.JSONGooglePlaceDecode(sb.toString(), this), this.statusCode, this.nextPageToken, from);
         }else{
             mListener.placesQueryListener(null, "REQUEST_DENIED", "", from);
         }
         super.onPostExecute(sb);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setMessage(mContext.getResources().getString(R.string.loading_data));
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        super.onPreExecute();
     }
 
     @Override

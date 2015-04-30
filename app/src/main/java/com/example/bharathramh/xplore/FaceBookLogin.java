@@ -3,6 +3,7 @@ package com.example.bharathramh.xplore;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +41,7 @@ import com.example.storeData.StoreDataInServer;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookActivity;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
@@ -48,12 +50,14 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.facebook.internal.FacebookDialogFragment;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.parse.LogInCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
@@ -90,6 +94,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
     ListView listView;
     ArrayList data;
     NearByFriendsAdapter adapter;
+    ProgressDialog progressDialog;
 
     public void friendsListReq(){
         Profile profile = Profile.getCurrentProfile();
@@ -126,6 +131,11 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
         request.executeAsync();
         notLoggedInText.setText(getResources().getString(R.string.facebook_loading_data));
         notLoggedInText.setVisibility(View.VISIBLE);
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getActivity().getResources().getString(R.string.loading_friends));
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
         Log.d("facebooklogin", "here");
 
     }
@@ -198,11 +208,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
 
                 }else{
                     Log.d("facebookLoginCV", "Logout pressed here");
-                    notLoggedInText.setVisibility(View.VISIBLE);
-                    notLoggedInText.setText(getResources().getString(R.string.facebook_not_logged_in_msg));
-                    listView.setVisibility(View.GONE);
-                    ParseUser.logOut();
-                    dispName();
+
                 }
             }
         });
@@ -270,8 +276,12 @@ public void dispName(){
                 if(currentProfile!=null){
                     Log.d("facebookloginoncreate",currentProfile.getProfilePictureUri(100,100)+" is the pic");
                 }else{
-
                     Log.d("facebookloginoncreate", "profile was null");
+                    notLoggedInText.setVisibility(View.VISIBLE);
+                    notLoggedInText.setText(getResources().getString(R.string.facebook_not_logged_in_msg));
+                    listView.setVisibility(View.GONE);
+                    ParseUser.logOut();
+                    dispName();
                 }
 
             }
@@ -287,7 +297,7 @@ public void dispName(){
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 //        callbackManager.onActivityResult(requestCode, resultCode, data);
-        Log.d("facebookLogin", "onactivityresult");
+        Log.d("facebookLogin", "onactivityresult " + requestCode+ " "+ resultCode + " "+ data);
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -322,6 +332,7 @@ public void dispName(){
         if(data!=null && data.size()>0){
             Log.d("facebookLogindata", data.toString());
             notLoggedInText.setVisibility(View.GONE);
+            progressDialog.dismiss();
             listView.setVisibility(View.VISIBLE);
             adapter = new NearByFriendsAdapter(getActivity(), R.layout.friends_nearby_details_container, data);
             listView.setAdapter(adapter);

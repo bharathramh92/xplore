@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 import org.json.JSONException;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.provider.SyncStateContract;
@@ -24,14 +26,27 @@ import com.example.support.RequestParams;
 public class EventsAsyncTask extends AsyncTask<String, Void, String>{
     EventsListener mListener;
     Address location;
+    Context mContext;
+    ProgressDialog progressDialog;
 	
-	public EventsAsyncTask(EventsListener mListener, Address loc) {
+	public EventsAsyncTask(EventsListener mListener, Context mCon, Address loc) {
 		super();
 		this.mListener = mListener;
         this.location = loc;
+        this.mContext = mCon;
 	}
 
-	@Override
+    @Override
+    protected void onPreExecute() {
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setMessage(mContext.getResources().getString(R.string.loading_data));
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        super.onPreExecute();
+    }
+
+    @Override
 	protected String doInBackground(String... params) {
 		// TODO Auto-generated method stub
 
@@ -70,9 +85,9 @@ public class EventsAsyncTask extends AsyncTask<String, Void, String>{
 	@Override
 	protected void onPostExecute(String result) {
 		// TODO Auto-generated method stub
-		super.onPostExecute(result);
-
+		progressDialog.dismiss();
 		mListener.eventsDataRetrieved(EventsJSONUtil.DecodeEvents(result));
+        super.onPostExecute(result);
 	}
 	
 	public interface EventsListener{
