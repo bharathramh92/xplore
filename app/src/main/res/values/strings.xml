@@ -13,12 +13,18 @@
 
     <string name="googleKey">AIzaSyBrob9bJTHXDr1gQookO5RgWhYNbE4Rwww</string>
     
-    <string-array name="mainArray">
+    <string-array name="itemArray">
 
-        <item>Restaurants</item>
+        <item>Home</item>
+        <item>Eateries</item>
         <item>Hotels</item>
-        <item>Friends Nearby</item>
         <item>Attractions</item>
+        <item>Friends NearBy</item>
+        <item>Events</item>
+        <item>Movies</item>
+        <item>Settings</item>
+        <item>Feedback</item>
+        <item>Terms and Condition</item>
 
     </string-array>
 

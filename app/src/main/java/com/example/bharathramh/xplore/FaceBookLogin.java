@@ -125,6 +125,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
         });
         request.executeAsync();
         notLoggedInText.setText(getResources().getString(R.string.facebook_loading_data));
+        notLoggedInText.setVisibility(View.VISIBLE);
         Log.d("facebooklogin", "here");
 
     }
@@ -173,16 +174,15 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                                         notLoggedInText.setVisibility(View.VISIBLE);
                                         notLoggedInText.setText(getResources().getString(R.string.facebook_not_logged_in_msg));
                                         listView.setVisibility(View.GONE);
-                                        data.clear();
+                                        if(data != null){
+                                            data.clear();
+                                        }
                                         if(adapter!=null){
                                             adapter.notifyDataSetChanged();
                                         }
-                                        Log.d("facebookLoginCV", "Logout pressed");
-                                        ParseUser.logOut();
-                                        dispName();
+
                                         Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                                     } else if (user.isNew()) {
-
 
 //                    successToken = user.getSessionToken();
 //                    successToken = user.get
@@ -190,9 +190,9 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                                     } else {
 //                    successToken = user.getSessionToken();
 
-                                        dispName();
                                         Log.d("MyApp", "User logged in through Facebook!");
                                     }
+                                    dispName();
                                 }
                             });
 
@@ -206,18 +206,12 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                 }
             }
         });
-
-
-
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-
-
     }
 
     @Override
@@ -285,7 +279,6 @@ public void dispName(){
 
         profileTracker.startTracking();
 
-
     }
 
 
@@ -294,6 +287,7 @@ public void dispName(){
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 //        callbackManager.onActivityResult(requestCode, resultCode, data);
+        Log.d("facebookLogin", "onactivityresult");
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -315,6 +309,12 @@ public void dispName(){
         }
     }
 
+    @Override
+    public void onPause() {
+        Log.d("mainviewfrag", "onPause");
+        super.onPause();
+
+    }
 
     @Override
     public void nearByFriendsDataRetrieved(ArrayList data) {
@@ -360,7 +360,7 @@ public void dispName(){
             alertDialog.show();
         }
 
-        dispName();
+//        dispName();
 
         Log.d("facebookLogin", "onResume");
 

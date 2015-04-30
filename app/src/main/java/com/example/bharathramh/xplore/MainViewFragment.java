@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -37,6 +39,7 @@ import com.example.google.GoogleGeoLocAsync;
 import com.example.google.PlacesGoogleAsync;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 /**
@@ -45,8 +48,7 @@ import java.util.ArrayList;
  * {@link MainViewFragment.MainViewOnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class MainViewFragment extends Fragment implements EventsAsyncTask.EventsListener,
-        GoogleGeoLocAsync.GoogleGeoLocListener, PlacesGoogleAsync.GooglePlacesInterface{
+public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.GoogleGeoLocListener{
 
     private MainViewOnFragmentInteractionListener mListener;
 
@@ -57,11 +59,13 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
     TextView currectPlaceText;
     Address currectSearchLocation;
     boolean firstTime;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 
     public static String[] mainItemsLists = {"Eateries", "Hotels", "Attractions", "Friends NearBy", "Events", "Movies"};
     String searchLocation="";
     String dispText;
-    ImageView search, gpsImg;
+    ImageView search, gpsImg, optionsImg;
 
     public MainViewFragment() {
         // Required empty public constructor
@@ -72,6 +76,8 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
         super.onCreate(savedInstanceState);
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         firstTime = true;
+        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) getActivity().findViewById(R.id.left_drawer);
     }
 
 
@@ -106,7 +112,7 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
                 @Override
                 public void onLocationChanged(Location location) {
                     Log.d("mainviewfrag", "on loc changed " + location);
-                    Address address = new Address(null);
+                    Address address = new Address(Locale.getDefault());
                     address.setLatitude(location.getLatitude());
                     address.setLongitude(location.getLongitude());
                     showDataAfterLocRetrieval(address, true);
@@ -170,6 +176,14 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
 
         search = (ImageView) getView().findViewById(R.id.searchImage);
         gpsImg = (ImageView) getView().findViewById(R.id.gpsImage);
+        optionsImg = (ImageView) getView().findViewById(R.id.options);
+
+        optionsImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(mDrawerList);
+            }
+        });
 
         gpsImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,71 +216,9 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
                 Log.d("mainviewfragONlist", "item " + position + " clicked");
 //                mListener.MainViewFragChoice(mainItemsLists[position], currectSearchLocation);
                 Log.d("mainviewfrag", "obj is " + parent.getItemAtPosition(position));
-                String selectedOption = parent.getItemAtPosition(position).toString();
 
-                switch (selectedOption){
-                    case "Eateries":
-                        PlacesGoogleAsync placesAsyncE = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
-                        //first search for restaurants
-                        placesAsyncE.execute(constants.GOOGLE_EATERIES);
-                        break;
-                    case "Hotels":
-                        PlacesGoogleAsync placesAsyncH = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
-                        placesAsyncH.execute(constants.GOOGLE_HOTEL);
-                        break;
-                    case "Attractions":
-                        PlacesGoogleAsync placesAsyncA = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
-                        placesAsyncA.execute(constants.GOOGLE_ATTRACTIONS);
-                        break;
-                    case "Friends NearBy":
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Approval");
-                        builder.setMessage("This feature uses facebook and " +
-                                "we will store your location information in our servers." +
-                                "Press OK if you agree.");
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mListener.callFriendsActivity(currectSearchLocation);
-                            }
-                        });
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                mListener.itemSelectedFromMainFrag(parent, view, position, id);
 
-                            }
-                        });
-
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
-                        break;
-                    case "Events":
-                        EventsAsyncTask eventsAsync = new EventsAsyncTask(MainViewFragment.this, currectSearchLocation);
-                        eventsAsync.execute(constants.EVENTS_CATEGORY);
-                        break;
-                    case "Movies":
-                        PlacesGoogleAsync placesAsyncM = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
-                        placesAsyncM.execute(constants.GOOGLE_MOVIES);
-
-                }
-
-               /* if(selectedOption.equals("Eateries")) {
-
-                }else if(selectedOption.equals("Hotels")){
-
-                }else if(selectedOption.equals("Attractions")){
-
-                }else if(position==3){
-
-
-
-                }else if(position==4){
-//                    PlacesGoogleAsync placesAsync = new PlacesGoogleAsync(MainViewFragment.this , getActivity(),currectSearchLocation);
-//                    placesAsync.execute(constants.GOOGLE_MOVIES);
-
-                }else if(position==5){
-
-                }*/
             }
         });
 
@@ -316,10 +268,10 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
                 dispText = dispText + ((searchLocation.getCountryName() != null) ? searchLocation.getCountryName() : "");
             }
             currectPlaceText.setText(dispText);
-
+            currectSearchLocation = searchLocation;
+            mListener.updateCurrentLocation(currectSearchLocation);
             listView.setVisibility(View.VISIBLE);
             currectPlaceText.setVisibility(View.VISIBLE);
-            currectSearchLocation = searchLocation;
         }else {
             if(searchLocation!=null){
                 Log.d("mainViewFrag", searchLocation.toString());
@@ -329,32 +281,7 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
 
     }
 
-    @Override
-    public void placesQueryListener(ArrayList<GooglePlacesCS> result, String statusCode, String nextTokenString) {
-            if(result!=null && statusCode.equals("OK") && result.size()>0) {
-                Log.d("mainActivity", result.toString());
-                Log.d("mainActivity", "status Code" + statusCode + "nextToken" + nextTokenString);
 
-                mListener.callRestFrag(result);
-            }else if(!statusCode.equals("OK")){
-                try{
-                    if(statusCode.equals("OVER_QUERY_LIMIT") || statusCode.equals("REQUEST_DENIED") || statusCode.equals("INVALID_REQUEST")){
-                        Log.d("mainFrag", statusCode);
-                        Toast.makeText(getActivity(), "Please try again later", Toast.LENGTH_SHORT).show();
-                    }else if(statusCode.equals("ZERO_RESULTS")){
-                        Log.d("mainFrag", "ZERO_RESULTS");
-                        Toast.makeText(getActivity(), "No results for the given location", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Log.d("mainfrag", statusCode + " is the status code");
-                    }
-
-                }catch (Exception e){
-                    Log.d("mainActivity", "Error while calling error method in main frag");
-                    e.printStackTrace();
-                }
-            }
-
-    }
 
     public boolean hasNetwork(){
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -395,22 +322,15 @@ public class MainViewFragment extends Fragment implements EventsAsyncTask.Events
         }
     }
 
-    @Override
-    public void eventsDataRetrieved(ArrayList<Event> eventsList) {
 
-        if(eventsList != null && eventsList.size() >0){
-            Log.d("mainviewfrag", eventsList.toString());
-            mListener.callEventsFrag(eventsList);
-        }
-
-    }
 
     public interface MainViewOnFragmentInteractionListener {
         // TODO: Update argument type and name
-
-        public void callRestFrag(ArrayList<GooglePlacesCS> result);
-        public void callFriendsActivity(Address location);
-        public void callEventsFrag(ArrayList result);
+        public void itemSelectedFromMainFrag(AdapterView<?> parent, View view, int position, long id);
+        public void updateCurrentLocation(Address currectSearchLocation);
+//        public void callRestFrag(ArrayList<GooglePlacesCS> result);
+//        public void callFriendsActivity(Address location);
+//        public void callEventsFrag(ArrayList result);
     }
 
 }

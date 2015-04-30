@@ -33,6 +33,7 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
     Context mContext;
     Address location;
     String statusCode=""; String nextPageToken="";
+    String from;
 
     public PlacesGoogleAsync(GooglePlacesInterface listener, Context context, Address loc) {
         this.mListener = (GooglePlacesInterface) listener;
@@ -43,9 +44,9 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
     @Override
     protected void onPostExecute(String sb) {
         if(sb!=null) {
-            mListener.placesQueryListener(GoogleJSONUtils.JSONGooglePlaceDecode(sb.toString(), this), this.statusCode, this.nextPageToken);
+            mListener.placesQueryListener(GoogleJSONUtils.JSONGooglePlaceDecode(sb.toString(), this), this.statusCode, this.nextPageToken, from);
         }else{
-            mListener.placesQueryListener(null, "REQUEST_DENIED", "");
+            mListener.placesQueryListener(null, "REQUEST_DENIED", "", from);
         }
         super.onPostExecute(sb);
     }
@@ -76,7 +77,7 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
                     sb.append(temp);
 //                    Log.d("placesgoogle" , temp);
                 }
-
+                this.from = params[1];
                 return sb.toString();
 
 
@@ -98,7 +99,7 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
 
 
     public interface GooglePlacesInterface{
-        public void placesQueryListener(ArrayList<GooglePlacesCS> result,String statusCode, String nextTokenString);
+        public void placesQueryListener(ArrayList<GooglePlacesCS> result,String statusCode, String nextTokenString, String from);
 //        public void nextToken();
     }
 }
