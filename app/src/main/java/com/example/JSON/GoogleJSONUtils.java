@@ -43,7 +43,7 @@ public class GoogleJSONUtils {
                 try {
                     JSONObject current = array.getJSONObject(i);
                     gpcs.setName(current.getString("name"));
-                    gpcs.setPlaceId(current.getString("id"));
+                    gpcs.setPlaceId(current.getString("place_id"));
                     gpcs.setLat(current.getJSONObject("geometry").getJSONObject("location").getDouble("lat"));
                     gpcs.setLng(current.getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
                     try{

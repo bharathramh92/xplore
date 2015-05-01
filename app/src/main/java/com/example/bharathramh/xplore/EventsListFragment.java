@@ -1,6 +1,7 @@
 package com.example.bharathramh.xplore;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.bharathramh.Adapters.EventsListViewAdapter;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 public class EventsListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    ArrayList<Event> events;
 
     public static EventsListFragment instance(ArrayList result){
         EventsListFragment f = new EventsListFragment();
@@ -46,9 +49,17 @@ public class EventsListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
         ListView listView = (ListView) view.findViewById(R.id.eventsListView);
-        ArrayList<Event> events = (ArrayList<Event>) getArguments().getSerializable("events");
+        events = (ArrayList<Event>) getArguments().getSerializable("events");
         EventsListViewAdapter adapter = new EventsListViewAdapter(getActivity(), R.layout.events_container, events);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event currentEvent = events.get(position);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentEvent.getUrl()));
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

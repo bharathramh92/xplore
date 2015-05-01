@@ -2,14 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_material_light"
-    tools:context="com.example.bharathramh.xplore.RestaurantFragment">
-
+    tools:context="com.example.bharathramh.xplore.GoogleDataFragment">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/restaurantListView"
-        android:background="@color/bright_foreground_disabled_material_dark"
+        android:background="@color/bright_foreground_disabled_material_dark"/>
 
-        />
 </FrameLayout>

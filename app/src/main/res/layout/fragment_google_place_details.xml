@@ -1,0 +1,110 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.bharathramh.xplore.GooglePlaceDetailsFragment">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:id="@+id/gpdImage"
+        android:layout_gravity="center_horizontal|top" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center"
+        android:background="@color/bright_foreground_disabled_material_dark"
+        android:layout_margin="@dimen/mainLayoutPadding">
+
+        <LinearLayout
+            android:id="@+id/gpdLinear"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="@dimen/details_padding"
+                android:layout_marginLeft="@dimen/details_padding"
+                android:layout_gravity="center"
+                android:id="@+id/gpdName"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="fill_parent">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_website_logo"
+                        android:layout_gravity="center"
+                        android:id="@+id/gpdWebsiteLogo" />
+                    </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="fill_parent">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gpdPhoneNumberLogo"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_call_logo"/>
+                    </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="fill_parent">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/favouriteLogo"
+                        android:src="@drawable/ic_not_favorited"/>
+                    </FrameLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="@dimen/details_padding"
+                android:layout_marginLeft="@dimen/details_padding"
+                android:id="@+id/gpdAddress"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="@dimen/details_padding"
+                android:layout_marginLeft="@dimen/details_padding"
+                android:id="@+id/gpdRating"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="@dimen/details_padding"
+                android:layout_marginLeft="@dimen/details_padding"
+                android:id="@+id/gpdPriceLevel" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

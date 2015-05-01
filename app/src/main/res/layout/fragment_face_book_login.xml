@@ -25,10 +25,9 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6"
-            android:background="@color/bright_foreground_disabled_material_dark"
+            android:layout_weight="10"
             android:layout_margin="@dimen/mainLayoutPadding"
-            android:paddingLeft="@dimen/details_padding">
+            android:background="@color/bright_foreground_disabled_material_dark">
 
             <ListView
                 android:layout_width="match_parent"

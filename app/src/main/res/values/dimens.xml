@@ -12,8 +12,8 @@
     <dimen name="mainViewSpaceHeight">5dp</dimen>
 
     <dimen name="rest_list_container_height">100dp</dimen>
-    <dimen name="friends_list_container_height">80dp</dimen>
+    <dimen name="friends_list_container_height">125dp</dimen>
 
     <dimen name="details_padding">10dp</dimen>
-
+    <dimen name="fb_friends_margin">10dp</dimen>
 </resources>

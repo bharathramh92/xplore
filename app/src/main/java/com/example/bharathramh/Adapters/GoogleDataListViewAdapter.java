@@ -18,18 +18,17 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by bharathramh on 4/15/15.
  */
-public class RestaurantListViewAdapter extends ArrayAdapter {
+public class GoogleDataListViewAdapter extends ArrayAdapter {
 
     Context mContext;
     int mResource;
     ArrayList<GooglePlacesCS> objects;
 
-    public RestaurantListViewAdapter(Context context, int resource, ArrayList objects) {
+    public GoogleDataListViewAdapter(Context context, int resource, ArrayList objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.mResource = resource;
@@ -56,12 +55,16 @@ public class RestaurantListViewAdapter extends ArrayAdapter {
             HashMap<String, String> tmp = new HashMap<>();
             tmp.put("key",ConstantsGoogle.GOOGLE_KEY);
             tmp.put("photoreference", current.getPhotoReference());
-            tmp.put("maxheight","400");
-            String photoUrl = RequestParams.getEncodedUrl(ConstantsGoogle.GOOGLE_API_PLACES_PHOTO, tmp);
-            Log.d("restAdapter", photoUrl);
+            tmp.put("maxheight","200");
+            String photoUrlS = RequestParams.getEncodedUrl(ConstantsGoogle.GOOGLE_API_PLACES_PHOTO, tmp);
+            tmp.put("maxheight","600");
+            String photoUrlL = RequestParams.getEncodedUrl(ConstantsGoogle.GOOGLE_API_PLACES_PHOTO, tmp);
+            current.setLargePhotoURL(photoUrlL);
+            Log.d("restAdapter", photoUrlS);
             int ht_px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, mContext.getResources().getDisplayMetrics());
             int wt_px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, mContext.getResources().getDisplayMetrics());
-            Picasso.with(mContext).load(photoUrl).resize(ht_px,wt_px).into(icon);
+            current.setSmallPhotoURL(photoUrlS);
+            Picasso.with(mContext).load(photoUrlS).resize(ht_px,wt_px).into(icon);
         }else{
             icon.setImageResource(R.drawable.no_image);
         }

@@ -22,6 +22,7 @@
         <item>Friends</item>
         <item>Events</item>
         <item>Movies</item>
+        <item>Favourites</item>
         <item>Settings</item>
         <item>Feedback</item>
         <item>Terms and Condition</item>
@@ -36,6 +37,7 @@
         <item>Friends</item>
         <item>Events</item>
         <item>Movies</item>
+        <item>Favourites</item>
 
     </string-array>
 

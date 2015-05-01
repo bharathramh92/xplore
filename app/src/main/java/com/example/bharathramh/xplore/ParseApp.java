@@ -22,9 +22,10 @@ public class ParseApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Parse.enableLocalDatastore(this);
         Parse.initialize(this, "wsxBRCY3S4jRe0zF1oI3caziMInrpwqA2sQ1Jtsp", "uiMVpEFeEWq7zTHEprAySuYctEzRbsNsCLkFvs2N");
-        ParseUser.enableRevocableSessionInBackground();
         ParseFacebookUtils.initialize(this);
+        ParseUser.enableRevocableSessionInBackground();
         printHaskKey();
     }
 

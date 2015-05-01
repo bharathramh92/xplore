@@ -2,17 +2,14 @@ package com.example.bharathramh.xplore;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInstaller;
 import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.tv.TvInputService;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,50 +22,33 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.JSON.FacebookFriendsJSONUtils;
 import com.example.bharathramh.Adapters.NearByFriendsAdapter;
-import com.example.bharathramh.Adapters.RestaurantListViewAdapter;
 import com.example.bharathramh.StorageClassCollection.FacebookFriendsData;
-import com.example.storeData.QueryFromServer;
 import com.example.storeData.StoreDataInServer;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookActivity;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.facebook.internal.FacebookDialogFragment;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.parse.LogInCallback;
-import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 /**
@@ -92,7 +72,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
     LoginButton facebookLogBtn;
     TextView notLoggedInText;
     ListView listView;
-    ArrayList data;
+    ArrayList<FacebookFriendsData> data;
     NearByFriendsAdapter adapter;
     ProgressDialog progressDialog;
 
@@ -327,15 +307,36 @@ public void dispName(){
     }
 
     @Override
-    public void nearByFriendsDataRetrieved(ArrayList data) {
-        this.data = data;
+    public void nearByFriendsDataRetrieved(ArrayList dataFB) {
+        progressDialog.dismiss();
+        this.data = dataFB;
         if(data!=null && data.size()>0){
             Log.d("facebookLogindata", data.toString());
             notLoggedInText.setVisibility(View.GONE);
-            progressDialog.dismiss();
             listView.setVisibility(View.VISIBLE);
             adapter = new NearByFriendsAdapter(getActivity(), R.layout.friends_nearby_details_container, data);
             listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    try {
+                        int versionCode = getActivity().getPackageManager().getPackageInfo("com.facebook.katana", 0).versionCode;
+                        if (versionCode >= 3002850) {
+                            Uri uri = Uri.parse("fb://facewebmodal/f?href=" + "https://www.facebook.com/" + data.get(position).getId());
+                            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                        } else {
+                            // open the Facebook app using the old method (fb://profile/id or fb://page/id)
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/"+data.get(position).getId())));
+                        }
+//                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/"+data.get(position).getId()));
+//                        startActivity(intent);
+                    } catch (Exception e) {
+                        Intent intent =  new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/" + data.get(position).getId()));
+                        startActivity(intent);
+                    }
+                }
+            });
+
 
         }else{
             notLoggedInText.setText(getResources().getString(R.string.facebook_no_friends_present));

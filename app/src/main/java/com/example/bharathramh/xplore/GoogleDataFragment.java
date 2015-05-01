@@ -16,9 +16,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.bharathramh.Adapters.RestaurantListViewAdapter;
+import com.example.bharathramh.Adapters.GoogleDataListViewAdapter;
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
 
 import java.util.ArrayList;
@@ -28,25 +29,25 @@ import java.util.ArrayList;
 * *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RestaurantFragment.onRestaurantFragmentInteraction} interface
+ * {@link GoogleDataFragment.onGoogleDataFragmentInteraction} interface
  * to handle interaction events.
  */
-public class RestaurantFragment extends Fragment {
+public class GoogleDataFragment extends Fragment {
 
-    private RestaurantFragListener mListener;
+    private GoogleDataFragListener mListener;
     ArrayList<GooglePlacesCS> data;
-    RestaurantListViewAdapter adapter;
+    GoogleDataListViewAdapter adapter;
     ListView listView;
     Activity rootActivity;
 
 
-    public RestaurantFragment() {
+    public GoogleDataFragment() {
         // Required empty public constructor
     }
 
 
-    public static RestaurantFragment instance(ArrayList<GooglePlacesCS> result){
-        RestaurantFragment f = new RestaurantFragment();
+    public static GoogleDataFragment instance(ArrayList<GooglePlacesCS> result){
+        GoogleDataFragment f = new GoogleDataFragment();
         Bundle _data = new Bundle();
         _data.putSerializable("mylist", result);
         f.setArguments(_data);
@@ -56,32 +57,26 @@ public class RestaurantFragment extends Fragment {
          return f;
     }
 
-
-    public void setData(ArrayList data){
-        this.data = data;
-        Log.d("restFrag", data.toString());
-        if(data!=null){
-
-        }else{
-            Log.d("restFrag", "data is null");
-        }
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
+        data = (ArrayList) getArguments().getSerializable("mylist");
 
         Log.d("restFrag", "onactivity created");
 
         listView = (ListView) rootActivity.findViewById(R.id.restaurantListView);
-        adapter = new RestaurantListViewAdapter(rootActivity, R.layout.restaurant_list_container, (ArrayList) getArguments().getSerializable("mylist"));
+        adapter = new GoogleDataListViewAdapter(rootActivity, R.layout.google_data_list_container, data);
         listView.setAdapter(adapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mListener.onGoogleDetailsSelected(data.get(position));
+            }
+        });
         /*try {
             listView = (ListView) getView().findViewById(R.id.restaurantListView);
-            adapter = new RestaurantListViewAdapter(getActivity(), R.layout.restaurant_list_container, data);
+            adapter = new GoogleDataListViewAdapter(getActivity(), R.layout.google_data_list_container, data);
             listView.setAdapter(adapter);
         }catch (Exception e){
             e.printStackTrace();
@@ -101,7 +96,7 @@ public class RestaurantFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onRestaurantFragmentInteraction(uri);
+            mListener.onGoogleDataFragmentInteraction(uri);
         }
     }
 
@@ -136,7 +131,7 @@ public class RestaurantFragment extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    getActivity().getSupportFragmentManager().beginTransaction().remove(RestaurantFragment.this).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(GoogleDataFragment.this).commit();
                     getFragmentManager().popBackStack();
                 }
             });
@@ -163,7 +158,7 @@ public class RestaurantFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (RestaurantFragListener) activity;
+            mListener = (GoogleDataFragListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -188,9 +183,9 @@ public class RestaurantFragment extends Fragment {
      */
 
 
-    public interface RestaurantFragListener {
+    public interface GoogleDataFragListener {
         // TODO: Update argument type and name
-        public void onRestaurantFragmentInteraction(Uri uri);
-
+        public void onGoogleDataFragmentInteraction(Uri uri);
+        public void onGoogleDetailsSelected(GooglePlacesCS data);
     }
 }

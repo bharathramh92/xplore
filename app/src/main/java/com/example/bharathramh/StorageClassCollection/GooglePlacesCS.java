@@ -1,15 +1,62 @@
 package com.example.bharathramh.StorageClassCollection;
 
+import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by bharathramh on 4/14/15.
  */
-public class GooglePlacesCS implements Serializable{
+public class GooglePlacesCS implements Serializable, Parcelable{
 
     private Double lat, lng, rating;
-    private String photoReference, vicinity, name, placeId;
+    private String photoReference;
+    private String vicinity;
+    private String name;
+    private String placeId;
+    private Uri websiteUri;
+
+    public Uri getWebsiteUri() {
+        return websiteUri;
+    }
+
+    public void setWebsiteUri(Uri websiteUri) {
+        this.websiteUri = websiteUri;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    private String phoneNumber;
     private int priceLevel;
+    private String smallPhotoURL;
+
+    public String getLargePhotoURL() {
+        return largePhotoURL;
+    }
+
+    public void setLargePhotoURL(String largePhotoURL) {
+        this.largePhotoURL = largePhotoURL;
+    }
+
+    private String largePhotoURL;
+
+    public String getSmallPhotoURL() {
+        return smallPhotoURL;
+    }
+
+    public void setSmallPhotoURL(String smallPhotoURL) {
+        this.smallPhotoURL = smallPhotoURL;
+    }
+
+
 
     public int getPriceLevel() {
         return priceLevel;
@@ -93,5 +140,15 @@ public class GooglePlacesCS implements Serializable{
 
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }

@@ -26,9 +26,10 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity implements EventsAsyncTask.EventsListener,
+        GooglePlaceDetailsFragment.OnGooPlDetailsInteractionListener,
         EventsListFragment.OnFragmentInteractionListener,
         FaceBookLogin.OnFragmentInteractionListener,
-        RestaurantFragment.RestaurantFragListener,
+        GoogleDataFragment.GoogleDataFragListener,
         PlacesGoogleAsync.GooglePlacesInterface, MainViewFragment.MainViewOnFragmentInteractionListener
         {
             public static String HOME_FRAG="Home";
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             public static String MOVIES_FRAG="Movies";
             public static String FACEBOOK_FRAG="Friends NearBy";
             public static String EVENTS_FRAG = "Events";
+            public static String PLACE_DETAILS_GOOGLE = "googleplace";
 
             ArrayList<GooglePlacesCS> data = null;
             Bundle userData;
@@ -71,9 +73,13 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
 
             }
 
+            @Override
+            public void onGooPlDetailsInteraction(Uri uri) {
+
+            }
 
 
-             public class DrawerItemClickListener implements ListView.OnItemClickListener {
+            public class DrawerItemClickListener implements ListView.OnItemClickListener {
                  @Override
                  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ItemSelected(parent, view, position, id);
@@ -83,12 +89,14 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
 
              private void ItemSelected(AdapterView<?> parent, View view, int position, long id) {
                  String selectedOption = parent.getItemAtPosition(position).toString();
+                 Log.d("mainactivity", "current frag is "+ currentFragment + " selectedOption is "+selectedOption);
 
                  if(currentSearchLocation != null) {
-                     Log.d("mainactivity", "current frag is "+ currentFragment + " selectedOption is "+selectedOption);
                      if(!currentFragment.equals(HOME_FRAG) && !currentFragment.equals(selectedOption)){
                          Log.d("mainactivity", "back stack count "+ getSupportFragmentManager().getBackStackEntryCount());
+
                          if(getSupportFragmentManager().getBackStackEntryCount()>0){
+
                              Log.d("mainactivity", "popping "+ currentFragment);
                              getSupportFragmentManager().popBackStackImmediate();
                          }
@@ -99,6 +107,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                          case "Home":
                              if(getSupportFragmentManager().getBackStackEntryCount()>0){
                                  Log.d("mainactivity", "popping "+ currentFragment);
+                                 currentFragment = HOME_FRAG;
                                  getSupportFragmentManager().popBackStackImmediate();
                              }
                              break;
@@ -176,6 +185,9 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                              placesAsyncM.execute(constants.GOOGLE_MOVIES, MOVIES_FRAG);
                              nextFragment = MOVIES_FRAG;
                              break;
+                         case "Favourites":
+                             //start Favourites intent
+                             break;
                          case "Settings":
                              //start Settings intent
                              break;
@@ -217,7 +229,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                  if(result!=null && statusCode.equals("OK") && result.size()>0) {
                      Log.d("mainActivity", result.toString());
                      Log.d("mainActivity", "status Code" + statusCode + "nextToken" + nextTokenString);
-                     RestaurantFragment restFrag = RestaurantFragment.instance(result);
+                     GoogleDataFragment restFrag = GoogleDataFragment.instance(result);
                      currentFragment = from;
                      getSupportFragmentManager().beginTransaction().
                              replace(R.id.mainContainer, restFrag, currentFragment)
@@ -278,12 +290,23 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             }
 
             @Override
-            public void onRestaurantFragmentInteraction(Uri uri) {
+            public void onGoogleDataFragmentInteraction(Uri uri) {
 
             }
 
+            @Override
+            public void onGoogleDetailsSelected(GooglePlacesCS data) {
+                if(data != null) {
+                    GooglePlaceDetailsFragment goo = GooglePlaceDetailsFragment.instanceOf(data);
+                    getSupportFragmentManager().beginTransaction().
+                            replace(R.id.mainContainer, goo , MainActivity.PLACE_DETAILS_GOOGLE)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
 
-             @Override
+
+            @Override
              public void OnEventsFragInteractionListener(Uri uri) {
 
         }
