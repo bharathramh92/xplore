@@ -187,6 +187,8 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
         MainListViewAdapter adapter = new MainListViewAdapter(getActivity(), R.layout.main_items_container_list_view, mainItemsLists);
         listView.setAdapter(adapter);
 
+
+
 //        {"Restaurant", "Hotels", "Attractions", "Friends NearBy", "Events", "Movies"};
         searchET = (EditText) getView().findViewById(R.id.searchLocation);
         currectPlaceText = (TextView) getView().findViewById(R.id.currentPlace);
@@ -229,7 +231,7 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
         });
 
 
-        if(firstTime) {
+        if(firstTime || currectSearchLocation == null) {
             listView.setVisibility(View.GONE);
             currectPlaceText.setVisibility(View.GONE);
             locDetailsFrame.setVisibility(View.GONE);

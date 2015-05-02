@@ -120,8 +120,8 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                              break;
                          }
                          currentFragment = SETTINGS_FRAG;
-                         SettingsFragment s = new SettingsFragment();
-                         getFragmentManager().beginTransaction()
+                         SettingsFragHelper s = new SettingsFragHelper();
+                         getSupportFragmentManager().beginTransaction()
                                  .replace(R.id.mainContainer,s, currentFragment)
                                  .addToBackStack(null).commit();
 
