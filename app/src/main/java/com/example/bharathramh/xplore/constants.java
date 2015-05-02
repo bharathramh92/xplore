@@ -13,8 +13,10 @@ public class constants {
     public static String NUMBER="number";
     public static String IS_PRESENT="isPresent";
 
-    public static String GOOGLE_EATERIES = "food|cafe|restaurant|bakery|meal_takeaway|meal_delivery";
-    public static String GOOGLE_ATTRACTIONS = "amusement_park|aquarium|art_gallery|casino|hindu_temple|library|bakery|mosque|church|city_hall|museum|park|place_of_worship|rv_park|rv_park|synagogue|zoo";
+    public static String GOOGLE_EATERIES = "food|restaurant|bakery";
+    public static String GOOGLE_COFFEE = "cafe";
+    public static String GOOGLE_BAR = "bar|night_club";
+    public static String GOOGLE_ATTRACTIONS = "casino|amusement_park|aquarium|art_gallery|hindu_temple|library|mosque|church|city_hall|museum|park|place_of_worship|synagogue|zoo";
     public static String GOOGLE_HOTEL = "lodging";
     public static String GOOGLE_MOVIES = "movie_theater";
 

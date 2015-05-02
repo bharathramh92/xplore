@@ -69,6 +69,7 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
     String searchLocation="";
     String dispText;
     ImageView search, gpsImg, optionsImg;
+    private Weather weather;
 
     public MainViewFragment() {
         // Required empty public constructor
@@ -168,12 +169,11 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
     }
 
     public void searchOnClick(){
-        tempTextView.setText("");
         searchLocation = searchET.getText().toString();
 
         if(!searchLocation.equals("")){
+            tempTextView.setText("");
             new GoogleGeoLocAsync(MainViewFragment.this, getActivity()).execute(searchLocation);
-        }else{
             InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
                     Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(searchET.getWindowToken(), 0);
@@ -183,7 +183,6 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        tempTextView = (TextView) getView().findViewById(R.id.tempText);
         listView = (ListView) getView().findViewById(R.id.mainlistview);
         MainListViewAdapter adapter = new MainListViewAdapter(getActivity(), R.layout.main_items_container_list_view, mainItemsLists);
         listView.setAdapter(adapter);
@@ -260,6 +259,10 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_view, container, false);
         locDetailsFrame = (FrameLayout) view.findViewById(R.id.mainViewLocDetails);
+        tempTextView = (TextView) view.findViewById(R.id.tempText);
+        if(weather != null){
+            tempTextView.setText("Its "+ weather.getSummary() + " and is "+ weather.getTemperature() + "F");
+        }
         return view;
     }
 
@@ -345,8 +348,6 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    getActivity().getSupportFragmentManager().beginTransaction().remove(MainViewFragment.this).commit();
-                    getFragmentManager().popBackStack();
                 }
             });
 
@@ -357,6 +358,7 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
 
     @Override
     public void weatherReceived(Weather weather) {
+        this.weather = weather;
         if(weather != null){
             Log.d("mainViewFrag", weather.toString());
             tempTextView.setText("Its "+ weather.getSummary() + " and is "+ weather.getTemperature() + "F");

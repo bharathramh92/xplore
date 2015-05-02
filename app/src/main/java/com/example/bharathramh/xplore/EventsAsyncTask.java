@@ -13,8 +13,10 @@ import org.json.JSONException;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.provider.SyncStateContract;
 import android.util.Log;
 
@@ -48,7 +50,9 @@ public class EventsAsyncTask extends AsyncTask<String, Void, String>{
 
     @Override
 	protected String doInBackground(String... params) {
-		// TODO Auto-generated method stub
+
+        SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String radius = mySharedPreferences.getString(mContext.getResources().getString(R.string.shared_pref_radius_key), ConstantsGoogle.DEFAULT_RADIUS);
 
         String searchTerm = params[0];
         Double latitude = location.getLatitude();
@@ -57,7 +61,7 @@ public class EventsAsyncTask extends AsyncTask<String, Void, String>{
             HashMap<String, String> hMap = new HashMap<>();
             hMap.put(ConstantsGoogle.LOCATION , location.getLatitude()+","+location.getLongitude());
             hMap.put(constants.APP_KEY_STRING, constants.EVENTS_APP_KEY);
-            hMap.put("within" , ConstantsGoogle.RADIUS_IN_METERS/1000+"");
+            hMap.put("within" , radius);
             hMap.put("units", "km");
             hMap.put("category", params[0]);
             hMap.put("sort_order", "popularity");

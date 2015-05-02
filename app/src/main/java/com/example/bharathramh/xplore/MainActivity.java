@@ -2,10 +2,14 @@ package com.example.bharathramh.xplore;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -29,7 +33,7 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity implements EventsAsyncTask.EventsListener,
         GooglePlaceDetailsFragment.OnGooPlDetailsInteractionListener,
         EventsListFragment.OnFragmentInteractionListener,
-        FaceBookLogin.OnFragmentInteractionListener,
+        FriendsNearByFaceBook.OnFragmentInteractionListener,
         GoogleDataFragment.GoogleDataFragListener,
         PlacesGoogleAsync.GooglePlacesInterface, MainViewFragment.MainViewOnFragmentInteractionListener
         {
@@ -40,7 +44,10 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             public static String MOVIES_FRAG="Movies";
             public static String FACEBOOK_FRAG="Friends NearBy";
             public static String EVENTS_FRAG = "Events";
+            public static String COFFEE_FRAG = "Coffee";
+            public static String BAR_FRAG = "Bar";
             public static String PLACE_DETAILS_GOOGLE = "googleplace";
+            public static String SETTINGS_FRAG = "Settings";
 
             ArrayList<GooglePlacesCS> data = null;
             Bundle userData;
@@ -93,6 +100,15 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                  Log.d("mainactivity", "current frag is "+ currentFragment + " selectedOption is "+selectedOption);
 
                  switch (selectedOption) {
+
+                     case "Home":
+                         if(getSupportFragmentManager().getBackStackEntryCount()>0){
+                             Log.d("mainactivity", "popping "+ currentFragment);
+                             currentFragment = HOME_FRAG;
+                             getSupportFragmentManager().popBackStackImmediate();
+                         }
+                         break;
+
                      case "Favourites":
                          //start Favourites intent
                          startActivity(new Intent(MainActivity.this, FavouriteActivity.class));
@@ -100,6 +116,15 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                          break;
                      case "Settings":
                          //start Settings intent
+                         if (currentFragment.equals(SETTINGS_FRAG)){
+                             break;
+                         }
+                         currentFragment = SETTINGS_FRAG;
+                         SettingsFragment s = new SettingsFragment();
+                         getFragmentManager().beginTransaction()
+                                 .replace(R.id.mainContainer,s, currentFragment)
+                                 .addToBackStack(null).commit();
+
                          break;
                      case "Feedback":
                          //start Feedback intent
@@ -121,13 +146,6 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
 
                              switch (selectedOption) {
 
-                                 case "Home":
-                                     if(getSupportFragmentManager().getBackStackEntryCount()>0){
-                                         Log.d("mainactivity", "popping "+ currentFragment);
-                                         currentFragment = HOME_FRAG;
-                                         getSupportFragmentManager().popBackStackImmediate();
-                                     }
-                                     break;
 
                                  case "Eateries":
 
@@ -139,6 +157,29 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                                      placesAsyncE.execute(constants.GOOGLE_EATERIES, EATERIES_FRAG);
                                      nextFragment = EATERIES_FRAG;
                                      break;
+
+                                 case "Coffee":
+
+                                     if (currentFragment.equals(COFFEE_FRAG)){
+                                         break;
+                                     }
+                                     PlacesGoogleAsync placesAsyncC = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
+                                     //first search for restaurants
+                                     placesAsyncC.execute(constants.GOOGLE_COFFEE, COFFEE_FRAG);
+                                     nextFragment = COFFEE_FRAG;
+                                     break;
+
+                                 case "Bar":
+
+                                     if (currentFragment.equals(BAR_FRAG)){
+                                         break;
+                                     }
+                                     PlacesGoogleAsync placesAsyncB = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
+                                     //first search for restaurants
+                                     placesAsyncB.execute(constants.GOOGLE_BAR, BAR_FRAG);
+                                     nextFragment = BAR_FRAG;
+                                     break;
+
                                  case "Hotels":
                                      if (currentFragment.equals(HOTELS_FRAG)){
                                          break;
@@ -167,7 +208,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                                      builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                          @Override
                                          public void onClick(DialogInterface dialog, int which) {
-                                             FaceBookLogin f = FaceBookLogin.instance(currentSearchLocation);
+                                             FriendsNearByFaceBook f = FriendsNearByFaceBook.instance(currentSearchLocation);
                                              currentFragment = FACEBOOK_FRAG;
                                              getSupportFragmentManager().beginTransaction().
                                                      replace(R.id.mainContainer, f, currentFragment)
@@ -269,11 +310,12 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                 if(mDrawerLayout.isDrawerOpen(mDrawerList)){
                     mDrawerLayout.closeDrawer(mDrawerList);
                 }else{
-                    if(getSupportFragmentManager().getBackStackEntryCount()>0){
+                    if(getSupportFragmentManager().getBackStackEntryCount() > 0){
                         currentFragment = HOME_FRAG;
                         mDrawerLayout.closeDrawer(mDrawerList);
                         getSupportFragmentManager().popBackStack();
-                    }else{
+                    }
+                    else{
                         super.onBackPressed();
                     }
                 }
@@ -315,6 +357,43 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
              public void OnEventsFragInteractionListener(Uri uri) {
 
         }
+
+            public boolean hasNetwork(){
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo nwInfo = cm.getActiveNetworkInfo();
+                if(nwInfo!=null &&nwInfo.isConnected()){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+
+            @Override
+            public void onResume() {
+                super.onResume();
+
+                if (!hasNetwork()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Data not enabled");
+                    builder.setMessage("Would you like to enable the Internet connection");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                            startActivity(intent);
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+            }
 }
 
 /*

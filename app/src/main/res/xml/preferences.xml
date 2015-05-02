@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_title">
+
+        <EditTextPreference
+            android:id="@+id/prefETP"
+            android:key="@string/shared_pref_radius_key"
+            android:title="@string/shared_pref_disp_title"
+            android:inputType="number"
+            android:summary="@string/shared_pref_disp_summary"
+            android:dialogTitle="@string/shared_pref_disp_title" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

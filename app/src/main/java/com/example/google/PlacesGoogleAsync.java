@@ -3,9 +3,11 @@ package com.example.google;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.example.JSON.GoogleJSONUtils;
@@ -73,12 +75,15 @@ public class PlacesGoogleAsync extends AsyncTask<String, Void, String> implement
         Double latitude = location.getLatitude();
         Double longitude = location.getLongitude();
 
+        SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String radius = mySharedPreferences.getString(mContext.getResources().getString(R.string.shared_pref_radius_key), ConstantsGoogle.DEFAULT_RADIUS);
+
         if(location.hasLatitude() == true && location.hasLongitude() == true){
             HashMap<String, String> hMap = new HashMap<>();
             hMap.put(ConstantsGoogle.LOCATION , location.getLatitude()+","+location.getLongitude());
             hMap.put(ConstantsGoogle.KEY, ConstantsGoogle.GOOGLE_KEY);
             hMap.put(ConstantsGoogle.TYPES , searchTerm);
-            hMap.put(ConstantsGoogle.RADIUS, ""+ConstantsGoogle.RADIUS_IN_METERS);
+            hMap.put(ConstantsGoogle.RADIUS, ""+radius);
             hMap.put("rankby" , "prominence");
 //            hMap.put("rankby" , "distance");
 

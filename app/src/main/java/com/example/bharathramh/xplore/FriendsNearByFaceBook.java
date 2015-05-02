@@ -54,10 +54,10 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FaceBookLogin.OnFragmentInteractionListener} interface
+ * {@link FriendsNearByFaceBook.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsync.nearByFriendsListener{
+public class FriendsNearByFaceBook extends Fragment implements PopulateNearByFriendsAsync.nearByFriendsListener{
 
     private OnFragmentInteractionListener mListener;
     LoginButton loginButton;
@@ -103,7 +103,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
                     b.putDouble("longitude",queryAddress.getLongitude() );
                     b.putSerializable("fbIds", fbIds);
                     b.putParcelable("AccessToken", AccessToken.getCurrentAccessToken());
-                    new PopulateNearByFriendsAsync(FaceBookLogin.this).execute(b);
+                    new PopulateNearByFriendsAsync(FriendsNearByFaceBook.this).execute(b);
 
                 }
             }
@@ -120,13 +120,13 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
 
     }
 
-    public FaceBookLogin() {
+    public FriendsNearByFaceBook() {
         // Required empty public constructor
     }
 
 
-    public static FaceBookLogin instance(Address address){
-        FaceBookLogin f = new FaceBookLogin();
+    public static FriendsNearByFaceBook instance(Address address){
+        FriendsNearByFaceBook f = new FriendsNearByFaceBook();
         Bundle _data = new Bundle();
         _data.putParcelable("location", address);
         f.setArguments(_data);
@@ -144,7 +144,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_face_book_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_friends_near_by_face_book, container, false);
         notLoggedInText = (TextView) view.findViewById(R.id.notLoggedInTextView);
         listView = (ListView) view.findViewById(R.id.facebookFriendsLocationListView);
 
@@ -156,7 +156,7 @@ public class FaceBookLogin extends Fragment implements PopulateNearByFriendsAsyn
             public void onClick(View v) {
                 if (Profile.getCurrentProfile() == null) {
                     Log.d("facebookLoginCV", "Login pressed");
-                    ParseFacebookUtils.logInWithReadPermissionsInBackground(FaceBookLogin.this,
+                    ParseFacebookUtils.logInWithReadPermissionsInBackground(FriendsNearByFaceBook.this,
                             new ArrayList<String>() {{add("user_friends");}}, new LogInCallback() {
                                 @Override
                                 public void done(ParseUser user, ParseException err) {
@@ -363,7 +363,7 @@ public void dispName(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    getActivity().getSupportFragmentManager().beginTransaction().remove(FaceBookLogin.this).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(FriendsNearByFaceBook.this).commit();
                     getFragmentManager().popBackStack();
                 }
             });

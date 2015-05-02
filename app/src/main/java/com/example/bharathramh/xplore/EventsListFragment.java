@@ -1,9 +1,15 @@
 package com.example.bharathramh.xplore;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 //import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -102,4 +108,40 @@ public class EventsListFragment extends Fragment {
         public void OnEventsFragInteractionListener(Uri uri);
     }
 
+    public boolean hasNetwork(){
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo nwInfo = cm.getActiveNetworkInfo();
+        if(nwInfo!=null &&nwInfo.isConnected()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!hasNetwork()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Data not enabled");
+            builder.setMessage("Would you like to enable the Internet connection");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    }
 }

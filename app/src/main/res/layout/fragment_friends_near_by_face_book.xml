@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_material_light"
-    tools:context="com.example.bharathramh.xplore.FaceBookLogin">
+    tools:context="com.example.bharathramh.xplore.FriendsNearByFaceBook">
 
     <LinearLayout
         android:orientation="vertical"
@@ -38,6 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_margin="@dimen/mainLayoutPadding"
                 android:text="@string/facebook_not_logged_in_msg"
                 android:id="@+id/notLoggedInTextView"
                 android:layout_gravity="center" />

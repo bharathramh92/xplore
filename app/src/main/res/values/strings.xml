@@ -17,18 +17,23 @@
 
         <item>Home</item>
         <item>Eateries</item>
+        <item>Coffee</item>
+        <item>Bar</item>
         <item>Hotels</item>
         <item>Attractions</item>
         <item>Friends</item>
         <item>Events</item>
         <item>Movies</item>
         <item>Favourites</item>
+        <item>Settings</item>
 
     </string-array>
 
     <string-array name="mainMenuItemArray">
 
         <item>Eateries</item>
+        <item>Coffee</item>
+        <item>Bar</item>
         <item>Hotels</item>
         <item>Attractions</item>
         <item>Friends</item>
@@ -54,6 +59,11 @@
     <string name="facebook_loading_data">Loading Data, Please wait.</string>
     <string name="title_activity_favourite">FavouriteActivity</string>
 
+    <string name="pref_title">General</string>
+    <string name="shared_pref_radius_key">Search_Radius</string>
+    <string name="shared_pref_disp_summary">Radius in metres. It should not exceed 50000m</string>
+    <string name="shared_pref_disp_title">Search Radius Distance</string>
 
+    <string name="shared_pref_error_toast">Range should be between 0 and 50000</string>
 
 </resources>

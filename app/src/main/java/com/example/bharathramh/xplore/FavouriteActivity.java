@@ -1,6 +1,13 @@
 package com.example.bharathramh.xplore;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -159,6 +166,42 @@ public class FavouriteActivity extends ActionBarActivity implements GooglePlaceD
                 (GoogleDataFragment) getSupportFragmentManager().findFragmentByTag("Favourites");
         if(goo != null){
             goo.remove(place_id);
+        }
+    }
+    public boolean hasNetwork(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo nwInfo = cm.getActiveNetworkInfo();
+        if(nwInfo!=null &&nwInfo.isConnected()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!hasNetwork()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Data not enabled");
+            builder.setMessage("Would you like to enable the Internet connection");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
     }
 }
