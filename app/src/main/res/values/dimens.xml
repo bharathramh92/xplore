@@ -7,6 +7,7 @@
     <dimen name="signInIntroTopMargin">30dp</dimen>
     <dimen name="mainLayoutPadding">10dp</dimen>
     <dimen name="mainLayoutSearchHeight">50dp</dimen>
+    <dimen name="mainLayoutLocDataHeight">75dp</dimen>
     <dimen name="mainLayoutSearchPadding">25dp</dimen>
     <dimen name="mainViewEachHeight">35dp</dimen>
     <dimen name="mainViewSpaceHeight">5dp</dimen>
@@ -16,4 +17,5 @@
 
     <dimen name="details_padding">10dp</dimen>
     <dimen name="fb_friends_margin">10dp</dimen>
+  
 </resources>

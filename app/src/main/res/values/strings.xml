@@ -23,9 +23,6 @@
         <item>Events</item>
         <item>Movies</item>
         <item>Favourites</item>
-        <item>Settings</item>
-        <item>Feedback</item>
-        <item>Terms and Condition</item>
 
     </string-array>
 
@@ -37,7 +34,6 @@
         <item>Friends</item>
         <item>Events</item>
         <item>Movies</item>
-        <item>Favourites</item>
 
     </string-array>
 
@@ -49,11 +45,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_facebook_login">FacebookLoginActivity</string>
-    facebook_app_id
+
+    <string name="favourite_nil_message">No items in favourites</string>
+
     <string name="facebook_app_id">800970843305317</string>
     <string name="facebook_not_logged_in_msg">You have to login with facebook to access this feature</string>
     <string name="facebook_no_friends_present">None of your friends are present at this location</string>
     <string name="facebook_loading_data">Loading Data, Please wait.</string>
+    <string name="title_activity_favourite">FavouriteActivity</string>
 
 
 

@@ -52,6 +52,16 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
         return det;
     }
 
+    public static GooglePlaceDetailsFragment instanceOf(GooglePlacesCS data, boolean fav){
+
+        GooglePlaceDetailsFragment det = new GooglePlaceDetailsFragment();
+        Bundle b = new Bundle();
+        b.putBoolean("fav", fav);
+        b.putSerializable("data", data);
+        det.setArguments(b);
+        return det;
+    }
+
     public GooglePlaceDetailsFragment() {
         // Required empty public constructor
     }
@@ -92,15 +102,25 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
 
     public void dispDetails(){
         LinearLayout l = (LinearLayout) getView().findViewById(R.id.gpdLinear);
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 //        private TextView typeTV, nameTV, websiteTV, addressTV, phoneTV, ratingTV, priceTV;\
 //        int ht_px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, getActivity().getResources().getDisplayMetrics());
 //        int wt_px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, getActivity().getResources().getDisplayMetrics());
-        Picasso.with(getActivity()).load(data.getLargePhotoURL()).
-                resize(metrics.widthPixels, metrics.heightPixels*5/10).
-                into(placeImage);
-
+        String photoUrl ;
+//        if(data.getLargePhotoURL() != null) {
+        photoUrl = data.getLargePhotoURL();
+//        }else{
+//            photoUrl = "http://maps.googleapis.com/maps/api/streetview" +
+//                    "?size=400x400&fov=90&heading=235&pitch=10&sensor=false&location" + data.getLat()+",%20"+data.getLng();
+//        }
+        if(photoUrl != null) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            Picasso.with(getActivity()).load(photoUrl).
+                    resize(metrics.widthPixels, metrics.heightPixels * 5 / 10).
+                    into(placeImage);
+        }else{
+            placeImage.setImageResource(R.drawable.no_image);
+        }
 
         nameTV.setText(data.getName().toString());
 
@@ -186,7 +206,6 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onGooPlDetailsInteraction(uri);
         }
     }
 
@@ -199,6 +218,14 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if(getArguments().getBoolean("fav") && !data.isFavFlag()){
+         mListener.unfavourited(data.getPlaceId());
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -238,12 +265,16 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
     @Override
     public void favStored() {
         favlogo.setImageResource(R.drawable.ic_favorited);
+        data.setFavFlag(true);
     }
 
     @Override
     public void favRemoved() {
         favlogo.setImageResource(R.drawable.ic_not_favorited);
+        data.setFavFlag(false);
     }
+
+
 
     @Override
     public void favourite(boolean isPresent, String place_id, boolean removeOrAdd) {
@@ -275,7 +306,7 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
      */
     public interface OnGooPlDetailsInteractionListener {
         // TODO: Update argument type and name
-        public void onGooPlDetailsInteraction(Uri uri);
+        public void unfavourited(String place_id);
     }
 
 }

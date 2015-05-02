@@ -49,18 +49,36 @@
             android:layout_gravity="center"/>
 
 
+
+
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/mainLayoutSearchHeight"
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/mainLayoutLocDataHeight"
         android:background="@color/bright_foreground_disabled_material_dark"
         android:layout_margin="@dimen/mainLayoutPadding"
-        android:paddingLeft="@dimen/mainLayoutSearchPadding"
-        android:id="@+id/currentPlace"
-        android:gravity="center_vertical"
-        android:textSize="@dimen/abc_text_size_large_material"
+        android:id="@+id/mainViewLocDetails">
 
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/mainLayoutSearchPadding"
+            android:id="@+id/currentPlace"
+            android:gravity="left|top"
+            android:layout_margin="@dimen/mainLayoutPadding"
+            android:textSize="@dimen/abc_text_size_large_material"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_margin="@dimen/mainLayoutPadding"
+            android:layout_gravity="right|bottom"
+            android:id="@+id/tempText" />
+
+
+    </FrameLayout>
+
 
     <ListView
         android:layout_width="match_parent"

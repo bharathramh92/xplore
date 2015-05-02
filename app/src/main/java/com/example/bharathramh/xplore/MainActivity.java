@@ -3,6 +3,7 @@ package com.example.bharathramh.xplore;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Address;
 import android.net.Uri;
 import android.support.v4.widget.DrawerLayout;
@@ -74,7 +75,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             }
 
             @Override
-            public void onGooPlDetailsInteraction(Uri uri) {
+            public void unfavourited(String place_id) {
 
             }
 
@@ -91,117 +92,122 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                  String selectedOption = parent.getItemAtPosition(position).toString();
                  Log.d("mainactivity", "current frag is "+ currentFragment + " selectedOption is "+selectedOption);
 
-                 if(currentSearchLocation != null) {
-                     if(!currentFragment.equals(HOME_FRAG) && !currentFragment.equals(selectedOption)){
-                         Log.d("mainactivity", "back stack count "+ getSupportFragmentManager().getBackStackEntryCount());
+                 switch (selectedOption) {
+                     case "Favourites":
+                         //start Favourites intent
+                         startActivity(new Intent(MainActivity.this, FavouriteActivity.class));
+                         Log.d("mainactivity", "fav");
+                         break;
+                     case "Settings":
+                         //start Settings intent
+                         break;
+                     case "Feedback":
+                         //start Feedback intent
+                         break;
+                     case "Terms and Condition":
+                         //start Terms and Condition intent
+                         break;
+                     default:
+                         if(currentSearchLocation != null) {
+                             if(!currentFragment.equals(HOME_FRAG) && !currentFragment.equals(selectedOption)){
+                                 Log.d("mainactivity", "back stack count "+ getSupportFragmentManager().getBackStackEntryCount());
 
-                         if(getSupportFragmentManager().getBackStackEntryCount()>0){
+                                 if(getSupportFragmentManager().getBackStackEntryCount()>0){
 
-                             Log.d("mainactivity", "popping "+ currentFragment);
-                             getSupportFragmentManager().popBackStackImmediate();
-                         }
-                     }
-
-                     switch (selectedOption) {
-
-                         case "Home":
-                             if(getSupportFragmentManager().getBackStackEntryCount()>0){
-                                 Log.d("mainactivity", "popping "+ currentFragment);
-                                 currentFragment = HOME_FRAG;
-                                 getSupportFragmentManager().popBackStackImmediate();
-                             }
-                             break;
-
-                         case "Eateries":
-
-                             if (currentFragment.equals(EATERIES_FRAG)){
-                                break;
-                         }
-                             PlacesGoogleAsync placesAsyncE = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
-                             //first search for restaurants
-                             placesAsyncE.execute(constants.GOOGLE_EATERIES, EATERIES_FRAG);
-                             nextFragment = EATERIES_FRAG;
-                             break;
-                         case "Hotels":
-                             if (currentFragment.equals(HOTELS_FRAG)){
-                                 break;
-                             }
-                             PlacesGoogleAsync placesAsyncH = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
-                             placesAsyncH.execute(constants.GOOGLE_HOTEL, HOTELS_FRAG);
-                             nextFragment = HOTELS_FRAG;
-                             break;
-                         case "Attractions":
-                             if (currentFragment.equals(ATTRACTIONS_FRAG)){
-                                 break;
-                             }
-                             PlacesGoogleAsync placesAsyncA = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
-                             placesAsyncA.execute(constants.GOOGLE_ATTRACTIONS, ATTRACTIONS_FRAG);
-                             nextFragment = ATTRACTIONS_FRAG;
-                             break;
-                         case "Friends":
-                             if (currentFragment.equals(FACEBOOK_FRAG)){
-                                 break;
-                             }
-                             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                             builder.setTitle("Approval");
-                             builder.setMessage("This feature uses facebook and " +
-                                     "we will store your location information in our servers." +
-                                     "Press OK if you agree.");
-                             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int which) {
-                                     FaceBookLogin f = FaceBookLogin.instance(currentSearchLocation);
-                                     currentFragment = FACEBOOK_FRAG;
-                                     getSupportFragmentManager().beginTransaction().
-                                             replace(R.id.mainContainer, f, currentFragment)
-                                             .addToBackStack(null)
-                                             .commit();
-                                     nextFragment = FACEBOOK_FRAG;
+                                     Log.d("mainactivity", "popping "+ currentFragment);
+                                     getSupportFragmentManager().popBackStackImmediate();
                                  }
-                             });
-                             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int which) {
-
-                                 }
-                             });
-
-                             AlertDialog alertDialog = builder.create();
-                             alertDialog.show();
-                             break;
-                         case "Events":
-                             if (currentFragment.equals(EVENTS_FRAG)){
-                                 break;
                              }
-                             EventsAsyncTask eventsAsync = new EventsAsyncTask(MainActivity.this, MainActivity.this, currentSearchLocation);
-                             eventsAsync.execute(constants.EVENTS_CATEGORY);
-                             nextFragment = EVENTS_FRAG;
-                             break;
-                         case "Movies":
-                             if (currentFragment.equals(MOVIES_FRAG)){
-                                 break;
+
+                             switch (selectedOption) {
+
+                                 case "Home":
+                                     if(getSupportFragmentManager().getBackStackEntryCount()>0){
+                                         Log.d("mainactivity", "popping "+ currentFragment);
+                                         currentFragment = HOME_FRAG;
+                                         getSupportFragmentManager().popBackStackImmediate();
+                                     }
+                                     break;
+
+                                 case "Eateries":
+
+                                     if (currentFragment.equals(EATERIES_FRAG)){
+                                         break;
+                                     }
+                                     PlacesGoogleAsync placesAsyncE = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
+                                     //first search for restaurants
+                                     placesAsyncE.execute(constants.GOOGLE_EATERIES, EATERIES_FRAG);
+                                     nextFragment = EATERIES_FRAG;
+                                     break;
+                                 case "Hotels":
+                                     if (currentFragment.equals(HOTELS_FRAG)){
+                                         break;
+                                     }
+                                     PlacesGoogleAsync placesAsyncH = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
+                                     placesAsyncH.execute(constants.GOOGLE_HOTEL, HOTELS_FRAG);
+                                     nextFragment = HOTELS_FRAG;
+                                     break;
+                                 case "Attractions":
+                                     if (currentFragment.equals(ATTRACTIONS_FRAG)){
+                                         break;
+                                     }
+                                     PlacesGoogleAsync placesAsyncA = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
+                                     placesAsyncA.execute(constants.GOOGLE_ATTRACTIONS, ATTRACTIONS_FRAG);
+                                     nextFragment = ATTRACTIONS_FRAG;
+                                     break;
+                                 case "Friends":
+                                     if (currentFragment.equals(FACEBOOK_FRAG)){
+                                         break;
+                                     }
+                                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                                     builder.setTitle("Approval");
+                                     builder.setMessage("This feature uses facebook and " +
+                                             "we will store your location information in our servers." +
+                                             "Press OK if you agree.");
+                                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                         @Override
+                                         public void onClick(DialogInterface dialog, int which) {
+                                             FaceBookLogin f = FaceBookLogin.instance(currentSearchLocation);
+                                             currentFragment = FACEBOOK_FRAG;
+                                             getSupportFragmentManager().beginTransaction().
+                                                     replace(R.id.mainContainer, f, currentFragment)
+                                                     .addToBackStack(null)
+                                                     .commit();
+                                             nextFragment = FACEBOOK_FRAG;
+                                         }
+                                     });
+                                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                         @Override
+                                         public void onClick(DialogInterface dialog, int which) {
+
+                                         }
+                                     });
+
+                                     AlertDialog alertDialog = builder.create();
+                                     alertDialog.show();
+                                     break;
+                                 case "Events":
+                                     if (currentFragment.equals(EVENTS_FRAG)){
+                                         break;
+                                     }
+                                     EventsAsyncTask eventsAsync = new EventsAsyncTask(MainActivity.this, MainActivity.this, currentSearchLocation);
+                                     eventsAsync.execute(constants.EVENTS_CATEGORY);
+                                     nextFragment = EVENTS_FRAG;
+                                     break;
+                                 case "Movies":
+                                     if (currentFragment.equals(MOVIES_FRAG)){
+                                         break;
+                                     }
+                                     PlacesGoogleAsync placesAsyncM = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
+                                     placesAsyncM.execute(constants.GOOGLE_MOVIES, MOVIES_FRAG);
+                                     nextFragment = MOVIES_FRAG;
+                                     break;
+
                              }
-                             PlacesGoogleAsync placesAsyncM = new PlacesGoogleAsync(MainActivity.this, this, currentSearchLocation);
-                             placesAsyncM.execute(constants.GOOGLE_MOVIES, MOVIES_FRAG);
-                             nextFragment = MOVIES_FRAG;
-                             break;
-                         case "Favourites":
-                             //start Favourites intent
-                             break;
-                         case "Settings":
-                             //start Settings intent
-                             break;
-                         case "Feedback":
-                             //start Feedback intent
-                             break;
-                         case "Terms and Condition":
-                             //start Terms and Condition intent
-                             break;
-                     }
-
-
                  }
-             }
+            }
+
+            }
 
 
              @Override
@@ -223,8 +229,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
              }
 
 
-
-             @Override
+            @Override
              public void placesQueryListener(ArrayList<GooglePlacesCS> result, String statusCode, String nextTokenString, String from) {
                  if(result!=null && statusCode.equals("OK") && result.size()>0) {
                      Log.d("mainActivity", result.toString());
@@ -285,12 +290,12 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                          replace(R.id.mainContainer, f , MainActivity.EVENTS_FRAG)
                          .addToBackStack(null)
                          .commit();
+             }else{
+                 toast = Toast.makeText(this, "No data to show", Toast.LENGTH_SHORT);
+                     if(toast != null && toast.getView().getVisibility() != View.VISIBLE){
+                         toast.show();
+                     }
              }
-
-            }
-
-            @Override
-            public void onGoogleDataFragmentInteraction(Uri uri) {
 
             }
 

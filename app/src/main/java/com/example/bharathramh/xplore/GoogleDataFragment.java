@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.bharathramh.Adapters.GoogleDataListViewAdapter;
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
@@ -45,16 +46,26 @@ public class GoogleDataFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public void remove(String place_id){
+        for(GooglePlacesCS x : data){
+            if(x.getPlaceId().equals(place_id)){
+                data.remove(x);
+                if(data.size() == 0){
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.favourite_nil_message), Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                }
+                adapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
 
     public static GoogleDataFragment instance(ArrayList<GooglePlacesCS> result){
         GoogleDataFragment f = new GoogleDataFragment();
         Bundle _data = new Bundle();
         _data.putSerializable("mylist", result);
         f.setArguments(_data);
-
-
-
-         return f;
+        return f;
     }
 
     @Override
@@ -94,9 +105,9 @@ public class GoogleDataFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(GooglePlacesCS data) {
         if (mListener != null) {
-            mListener.onGoogleDataFragmentInteraction(uri);
+            mListener.onGoogleDetailsSelected(data);
         }
     }
 
@@ -114,7 +125,6 @@ public class GoogleDataFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
 
         if (!hasNetwork()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -185,7 +195,6 @@ public class GoogleDataFragment extends Fragment {
 
     public interface GoogleDataFragListener {
         // TODO: Update argument type and name
-        public void onGoogleDataFragmentInteraction(Uri uri);
         public void onGoogleDetailsSelected(GooglePlacesCS data);
     }
 }

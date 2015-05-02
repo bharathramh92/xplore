@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,7 +15,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 //import android.app.Fragment;
 import android.provider.Settings;
-import android.provider.Telephony;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -28,18 +26,16 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bharathramh.Adapters.MainListViewAdapter;
-import com.example.bharathramh.StorageClassCollection.Event;
-import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
+import com.example.bharathramh.StorageClassCollection.Weather;
 import com.example.google.GoogleGeoLocAsync;
-import com.example.google.PlacesGoogleAsync;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 
@@ -49,7 +45,8 @@ import java.util.Locale;
  * {@link MainViewFragment.MainViewOnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.GoogleGeoLocListener{
+public class MainViewFragment extends Fragment implements WeatherAsync.weatherAsyncListener,
+        GoogleGeoLocAsync.GoogleGeoLocListener{
 
     private MainViewOnFragmentInteractionListener mListener;
 
@@ -63,6 +60,9 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     ProgressDialog progressDialog;
+    String currentProvider;
+    TextView tempTextView;
+    FrameLayout locDetailsFrame;
 
     public static String[] mainItemsLists;
 //    = {"Eateries", "Hotels", "Attractions", "Friends", "Events", "Movies"};
@@ -87,7 +87,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
 
     public void getLocation(){
         //        GPS_PROVIDER
-        if(!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        if(!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Location access not enabled");
@@ -136,12 +136,27 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
                 @Override
                 public void onProviderDisabled(String provider) {
                     Log.d("mainviewfrag", "provider disabled");
+                    if (currentProvider.equals(LocationManager.NETWORK_PROVIDER)){
+                        mLocationManager.removeUpdates(mLocListener);
+                        mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, mLocListener, null);
+                        currentProvider = (LocationManager.GPS_PROVIDER);
+                    }else if (currentProvider.equals(LocationManager.GPS_PROVIDER)){
+                        getLocation();
+                        progressDialog.dismiss();
+                    }
+
                 }
             };
 
 //            Log.d("facebookLoginLoc", "using "+currentProvider);
             Log.d("mainviewfrag" , mLocationManager.getProviders(true) + " ");
+//            List<String> providers = mLocationManager.getProviders(true);
+//            for (String provider : providers) {
+//                mLocationManager.requestSingleUpdate(provider, mLocListener, null);
+//            }
             mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mLocListener, null);
+            currentProvider = LocationManager.NETWORK_PROVIDER;
+
 //            mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             progressDialog = new ProgressDialog(getActivity());
@@ -153,6 +168,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
     }
 
     public void searchOnClick(){
+        tempTextView.setText("");
         searchLocation = searchET.getText().toString();
 
         if(!searchLocation.equals("")){
@@ -167,6 +183,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        tempTextView = (TextView) getView().findViewById(R.id.tempText);
         listView = (ListView) getView().findViewById(R.id.mainlistview);
         MainListViewAdapter adapter = new MainListViewAdapter(getActivity(), R.layout.main_items_container_list_view, mainItemsLists);
         listView.setAdapter(adapter);
@@ -216,6 +233,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
         if(firstTime) {
             listView.setVisibility(View.GONE);
             currectPlaceText.setVisibility(View.GONE);
+            locDetailsFrame.setVisibility(View.GONE);
             firstTime = false;
         }else{
             currectPlaceText.setText(dispText);
@@ -241,6 +259,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_view, container, false);
+        locDetailsFrame = (FrameLayout) view.findViewById(R.id.mainViewLocDetails);
         return view;
     }
 
@@ -268,6 +287,8 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
 
     public void showDataAfterLocRetrieval(Address searchLocation, boolean nearMe){
 
+        new WeatherAsync(MainViewFragment.this).execute(searchLocation);
+
         if(searchLocation!=null && searchLocation.hasLatitude() && searchLocation.hasLongitude()){
 //                (searchLocation.getLocality() != null || searchLocation.getCountryName()!=null)){
 
@@ -283,6 +304,7 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
             mListener.updateCurrentLocation(currectSearchLocation);
             listView.setVisibility(View.VISIBLE);
             currectPlaceText.setVisibility(View.VISIBLE);
+            locDetailsFrame.setVisibility(View.VISIBLE);
         }else {
             if(searchLocation!=null){
                 Log.d("mainViewFrag", searchLocation.toString());
@@ -333,6 +355,15 @@ public class MainViewFragment extends Fragment implements GoogleGeoLocAsync.Goog
         }
     }
 
+    @Override
+    public void weatherReceived(Weather weather) {
+        if(weather != null){
+            Log.d("mainViewFrag", weather.toString());
+            tempTextView.setText("Its "+ weather.getSummary() + " and is "+ weather.getTemperature() + "F");
+        }else{
+            Log.d("mainViewFrag", "weather was null");
+        }
+    }
 
 
     public interface MainViewOnFragmentInteractionListener {

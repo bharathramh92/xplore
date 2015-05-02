@@ -17,6 +17,15 @@ public class GooglePlacesCS implements Serializable, Parcelable{
     private String name;
     private String placeId;
     private Uri websiteUri;
+    private boolean favFlag = true;
+
+    public boolean isFavFlag() {
+        return favFlag;
+    }
+
+    public void setFavFlag(boolean favFlag) {
+        this.favFlag = favFlag;
+    }
 
     public Uri getWebsiteUri() {
         return websiteUri;

@@ -1,11 +1,14 @@
 package com.example.storeData;
 
+import android.util.Log;
+
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +24,9 @@ public class LocalParse {
         fav.pinInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                mListener.favStored();
+                if(e == null) {
+                    mListener.favStored();
+                }
             }
         });
     }
@@ -33,7 +38,7 @@ public class LocalParse {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
-                if(parseObjects != null && parseObjects.size()> 0){
+                if(e == null && parseObjects != null && parseObjects.size()> 0){
                     mListener.favourite(true, place_id, removeOrAdd);
                 }else{
                     mListener.favourite(false, place_id, removeOrAdd);
@@ -50,7 +55,7 @@ public class LocalParse {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
-                if(parseObjects != null && parseObjects.size()> 0){
+                if(e == null && parseObjects != null && parseObjects.size()> 0){
                     for(ParseObject x : parseObjects){
                         x.unpinInBackground();
                     }
@@ -60,9 +65,31 @@ public class LocalParse {
         });
     }
 
+    public static void retreiveAllPlaceIds(final LocalParseRetreivalInterface mListener){
+        final ArrayList<String> ids = new ArrayList<>();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(FAV_CLASS_NAME);
+        query.fromLocalDatastore();
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                Log.d("localparse", "retrieved "+ parseObjects.size() + " results");
+                if(parseObjects != null && parseObjects.size()> 0){
+                    for(ParseObject x : parseObjects){
+                        ids.add(x.getString(PLACE_ID));
+                    }
+                }Log.d("localparse", "retrieved "+ ids.size() + " results");
+                mListener.retrieved(ids);
+            }
+        });
+    }
+
     public interface LocalParseInterface{
         public void favStored();
         public void favRemoved();
         public void favourite(boolean isPresent, String place_id, boolean removeOrAdd);
+    }
+
+    public interface LocalParseRetreivalInterface{
+        public void retrieved(ArrayList<String> placeIds);
     }
 }
