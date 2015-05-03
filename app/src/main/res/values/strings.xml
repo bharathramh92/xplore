@@ -65,5 +65,8 @@
     <string name="shared_pref_disp_title">Search Radius Distance</string>
 
     <string name="shared_pref_error_toast">Range should be between 0 and 50000</string>
+    
+    <string name="web_url_not_available">Website link not found</string>
+    <string name="phone_number_not_available">Phone number link not found</string>
 
 </resources>

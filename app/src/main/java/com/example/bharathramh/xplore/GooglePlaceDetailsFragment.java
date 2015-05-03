@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
 import com.example.storeData.LocalParse;
@@ -133,8 +134,13 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
         weblogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, data.getWebsiteUri());
-                startActivity(intent);
+//                Log.d("gpd", data.getWebsiteUri() + " is the web url");
+                if(data.getWebsiteUri() != null && !data.getWebsiteUri().equals("")) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, data.getWebsiteUri());
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.web_url_not_available), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -148,9 +154,15 @@ public class GooglePlaceDetailsFragment extends Fragment implements LocalParse.L
         phonelogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String number = "tel:" + data.getPhoneNumber().trim();
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(number));
-                startActivity(intent);
+//                Log.d("gpd", data.getPhoneNumber() + " is the phone number");
+                if(data.getPhoneNumber() != null && !data.getPhoneNumber().equals("")) {
+                    String number = "tel:" + data.getPhoneNumber().trim();
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(number));
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.phone_number_not_available), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

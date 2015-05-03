@@ -103,7 +103,7 @@ public class FriendsNearByFaceBook extends Fragment implements PopulateNearByFri
                     b.putDouble("longitude",queryAddress.getLongitude() );
                     b.putSerializable("fbIds", fbIds);
                     b.putParcelable("AccessToken", AccessToken.getCurrentAccessToken());
-                    new PopulateNearByFriendsAsync(FriendsNearByFaceBook.this).execute(b);
+                    new PopulateNearByFriendsAsync(FriendsNearByFaceBook.this, getActivity()).execute(b);
 
                 }
             }

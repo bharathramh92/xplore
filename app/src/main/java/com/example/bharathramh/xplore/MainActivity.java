@@ -98,7 +98,11 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
              private void ItemSelected(AdapterView<?> parent, View view, int position, long id) {
                  String selectedOption = parent.getItemAtPosition(position).toString();
                  Log.d("mainactivity", "current frag is "+ currentFragment + " selectedOption is "+selectedOption);
-
+                 if(currentFragment.equals(PLACE_DETAILS_GOOGLE)){
+                     while(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                         getSupportFragmentManager().popBackStackImmediate();
+                     }
+                 }
                  switch (selectedOption) {
 
                      case "Home":
@@ -299,8 +303,8 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                      }
                  }else if(result != null && result.size() == 0){
                      Log.d("mainactivity", "Zero results");
-                     toast = Toast.makeText(this, "No data to show", Toast.LENGTH_SHORT);
-                     if(toast != null && toast.getView().getVisibility() != View.VISIBLE){
+                     if(toast == null || toast.getView().getVisibility() != View.VISIBLE){
+                         toast = Toast.makeText(this, "No data to show", Toast.LENGTH_SHORT);
                          toast.show();
                      }
                  }
@@ -325,7 +329,7 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             public void eventsDataRetrieved(ArrayList<Event> eventsList) {
 
              if(eventsList != null && eventsList.size() >0){
-                 Log.d("mainviewfrag", eventsList.toString());
+                 Log.d("mainActivity", eventsList.toString() + " is the data");
                  EventsListFragment f = EventsListFragment.instance(eventsList);
                  currentFragment = EVENTS_FRAG;
                  getSupportFragmentManager().beginTransaction().
@@ -333,8 +337,8 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
                          .addToBackStack(null)
                          .commit();
              }else{
-                 toast = Toast.makeText(this, "No data to show", Toast.LENGTH_SHORT);
-                     if(toast != null && toast.getView().getVisibility() != View.VISIBLE){
+                     if(toast == null || toast.getView().getVisibility() != View.VISIBLE){
+                         toast = Toast.makeText(this, "No data to show", Toast.LENGTH_SHORT);
                          toast.show();
                      }
              }
@@ -345,8 +349,9 @@ public class MainActivity extends ActionBarActivity implements EventsAsyncTask.E
             public void onGoogleDetailsSelected(GooglePlacesCS data) {
                 if(data != null) {
                     GooglePlaceDetailsFragment goo = GooglePlaceDetailsFragment.instanceOf(data);
+                    currentFragment = PLACE_DETAILS_GOOGLE;
                     getSupportFragmentManager().beginTransaction().
-                            replace(R.id.mainContainer, goo , MainActivity.PLACE_DETAILS_GOOGLE)
+                            replace(R.id.mainContainer, goo , currentFragment)
                             .addToBackStack(null)
                             .commit();
                 }

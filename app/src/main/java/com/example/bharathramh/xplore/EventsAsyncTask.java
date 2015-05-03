@@ -52,7 +52,7 @@ public class EventsAsyncTask extends AsyncTask<String, Void, String>{
 	protected String doInBackground(String... params) {
 
         SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String radius = mySharedPreferences.getString(mContext.getResources().getString(R.string.shared_pref_radius_key), ConstantsGoogle.DEFAULT_RADIUS);
+        int radius = Integer.parseInt(mySharedPreferences.getString(mContext.getResources().getString(R.string.shared_pref_radius_key), ConstantsGoogle.DEFAULT_RADIUS))/1000;
 
         String searchTerm = params[0];
         Double latitude = location.getLatitude();
@@ -61,7 +61,7 @@ public class EventsAsyncTask extends AsyncTask<String, Void, String>{
             HashMap<String, String> hMap = new HashMap<>();
             hMap.put(ConstantsGoogle.LOCATION , location.getLatitude()+","+location.getLongitude());
             hMap.put(constants.APP_KEY_STRING, constants.EVENTS_APP_KEY);
-            hMap.put("within" , radius);
+            hMap.put("within" , radius+"");
             hMap.put("units", "km");
             hMap.put("category", params[0]);
             hMap.put("sort_order", "popularity");

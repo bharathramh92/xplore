@@ -2,6 +2,8 @@ package com.example.storeData;
 
 import android.util.Log;
 
+import com.example.bharathramh.xplore.R;
+import com.example.google.ConstantsGoogle;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -16,11 +18,10 @@ import java.util.List;
  */
 public class QueryFromServer {
 
-    public static List<ParseObject> friendsNearBy(Double mLatitude, Double mLongitude, ArrayList<Long> friendsId){
+    public static List<ParseObject> friendsNearBy(Double mLatitude, Double mLongitude, ArrayList<Long> friendsId, int radius){
         ParseQuery<ParseObject> query = ParseQuery.getQuery(ConstantsParse.TABLE_NAME_LOCATION_DATA);
         final ParseGeoPoint loctn = new ParseGeoPoint(mLatitude, mLongitude);
-
-        query.whereWithinKilometers(ConstantsParse.LOCATION, loctn, 25);
+        query.whereWithinKilometers(ConstantsParse.LOCATION, loctn, radius);
         query.whereContainedIn(ConstantsParse.Id, friendsId);
 
         try {
