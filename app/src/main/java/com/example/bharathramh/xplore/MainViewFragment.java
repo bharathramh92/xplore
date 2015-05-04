@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,6 +15,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 //import android.app.Fragment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -35,6 +38,7 @@ import android.widget.Toast;
 import com.example.bharathramh.Adapters.MainListViewAdapter;
 import com.example.bharathramh.StorageClassCollection.Weather;
 import com.example.google.GoogleGeoLocAsync;
+import com.example.storeData.LocalParse;
 
 import java.util.Locale;
 
@@ -47,6 +51,9 @@ import java.util.Locale;
  */
 public class MainViewFragment extends Fragment implements WeatherAsync.weatherAsyncListener,
         GoogleGeoLocAsync.GoogleGeoLocListener{
+
+    public static int NETWORK_TIME_OUT_MILLIS = 10*1000;
+    public static int GPS_TIME_OUT_MILLIS = 60*1000;
 
     private MainViewOnFragmentInteractionListener mListener;
 
@@ -63,6 +70,7 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
     String currentProvider;
     TextView tempTextView;
     FrameLayout locDetailsFrame;
+    boolean locationReceived;
 
     public static String[] mainItemsLists;
 //    = {"Eateries", "Hotels", "Attractions", "Friends", "Events", "Movies"};
@@ -87,6 +95,9 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
 
 
     public void getLocation(){
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
         //        GPS_PROVIDER
         if(!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
@@ -112,12 +123,13 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
             alertDialog.show();
 
         }else{
-
+            locationReceived = false;
             mLocListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     Log.d("mainviewfrag", "on loc changed " + location);
                     progressDialog.dismiss();
+                    locationReceived = true;
                     Address address = new Address(Locale.getDefault());
                     address.setLatitude(location.getLatitude());
                     address.setLongitude(location.getLongitude());
@@ -139,13 +151,26 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
                     Log.d("mainviewfrag", "provider disabled");
                     if (currentProvider.equals(LocationManager.NETWORK_PROVIDER)){
                         mLocationManager.removeUpdates(mLocListener);
+                        Looper myLooper = Looper.myLooper();
                         mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, mLocListener, null);
                         currentProvider = (LocationManager.GPS_PROVIDER);
+                        final Handler myHandler = new Handler(myLooper);
+                        myHandler.postDelayed(new Runnable() {
+                            public void run() {
+                                if(!locationReceived) {
+                                    Log.d("mainviewfrag", "gps timed out");
+                                    Toast.makeText(getActivity(), getResources().
+                                            getString(R.string.gps_time_out), Toast.LENGTH_LONG).show();
+                                    progressDialog.dismiss();
+                                }
+                                mLocationManager.removeUpdates(mLocListener);
+                            }
+                        }, GPS_TIME_OUT_MILLIS);
                     }else if (currentProvider.equals(LocationManager.GPS_PROVIDER)){
-                        getLocation();
+                        Toast.makeText(getActivity(), getResources().
+                                getString(R.string.gps_time_out), Toast.LENGTH_LONG).show();
                         progressDialog.dismiss();
                     }
-
                 }
             };
 
@@ -155,15 +180,90 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
 //            for (String provider : providers) {
 //                mLocationManager.requestSingleUpdate(provider, mLocListener, null);
 //            }
-            mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mLocListener, null);
-            currentProvider = LocationManager.NETWORK_PROVIDER;
+
+            Looper myLooper = Looper.myLooper();
+            try {
+                /*if(mLocationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {*/
+                    currentProvider = LocationManager.NETWORK_PROVIDER;
+                    mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mLocListener, null);
+                    final Handler myHandler = new Handler(myLooper);
+                    myHandler.postDelayed(new Runnable() {
+                        public void run() {
+
+                            if (!locationReceived && !currentProvider.equals(LocationManager.GPS_PROVIDER)) {
+
+                                mLocationManager.removeUpdates(mLocListener);
+                                Looper myLooper = Looper.myLooper();
+                                mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, mLocListener, null);
+                                currentProvider = (LocationManager.GPS_PROVIDER);
+                                final Handler myHandler = new Handler(myLooper);
+                                myHandler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        if (!locationReceived && currentProvider.equals(LocationManager.GPS_PROVIDER)) {
+                                            Log.d("mainviewfrag", "gps timed out");
+                                            Toast.makeText(getActivity(), getResources().
+                                                    getString(R.string.gps_time_out), Toast.LENGTH_LONG).show();
+                                            progressDialog.dismiss();
+                                        }
+                                        mLocationManager.removeUpdates(mLocListener);
+                                    }
+                                }, GPS_TIME_OUT_MILLIS);
+                                Log.d("mainviewfrag", "network timed out");
+                            }
+                        }
+                    }, NETWORK_TIME_OUT_MILLIS);
+                /*}else if(mLocationManager.getProvider(LocationManager.GPS_PROVIDER) != null){
+                    Looper myLooper1 = Looper.myLooper();
+                    mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, mLocListener, null);
+
+                    currentProvider = (LocationManager.GPS_PROVIDER);
+                    final Handler myHandler = new Handler(myLooper1);
+                    myHandler.postDelayed(new Runnable() {
+                        public void run() {
+                            if (!locationReceived && currentProvider.equals(LocationManager.GPS_PROVIDER)) {
+                                Log.d("mainviewfrag", "gps timed out");
+                                Toast.makeText(getActivity(), getResources().
+                                        getString(R.string.gps_time_out), Toast.LENGTH_LONG).show();
+                                progressDialog.dismiss();
+                            }
+                            mLocationManager.removeUpdates(mLocListener);
+                        }
+                    }, GPS_TIME_OUT_MILLIS);
+                    Log.d("mainviewfrag", "network timed out");
+                }*/
+
 
 //            mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage(getActivity().getResources().getString(R.string.loading_location));
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+
+                progressDialog.setMessage(getActivity().getResources().getString(R.string.loading_location));
+                progressDialog.show();
+            }catch (Exception e){
+                e.printStackTrace();
+                if(currentProvider.equals(LocationManager.NETWORK_PROVIDER)){
+
+                    mLocationManager.removeUpdates(mLocListener);
+                    Looper myLooper2 = Looper.myLooper();
+                    mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, mLocListener, null);
+                    currentProvider = (LocationManager.GPS_PROVIDER);
+                    final Handler myHandler = new Handler(myLooper2);
+                    myHandler.postDelayed(new Runnable() {
+                        public void run() {
+                            if (!locationReceived && currentProvider.equals(LocationManager.GPS_PROVIDER)) {
+                                Log.d("mainviewfrag", "gps timed out");
+                                Toast.makeText(getActivity(), getResources().
+                                        getString(R.string.gps_time_out), Toast.LENGTH_LONG).show();
+                                progressDialog.dismiss();
+                            }
+                            mLocationManager.removeUpdates(mLocListener);
+                        }
+                    }, GPS_TIME_OUT_MILLIS);
+
+                }else {
+                    Toast.makeText(getActivity(), "No Location Providers Present", Toast.LENGTH_SHORT).show();
+                }
+            }
+
 
         }
     }
@@ -173,7 +273,11 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
 
         if(!searchLocation.equals("")){
             tempTextView.setText("");
-            new GoogleGeoLocAsync(MainViewFragment.this, getActivity()).execute(searchLocation);
+            if(Geocoder.isPresent()) {
+                new GoogleGeoLocAsync(MainViewFragment.this, getActivity()).execute(searchLocation);
+            }else{
+                Toast.makeText(getActivity(), "Geocoder not present for the device", Toast.LENGTH_SHORT).show();
+            }
             InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
                     Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(searchET.getWindowToken(), 0);
@@ -291,12 +395,9 @@ public class MainViewFragment extends Fragment implements WeatherAsync.weatherAs
     }
 
     public void showDataAfterLocRetrieval(Address searchLocation, boolean nearMe){
-
-        new WeatherAsync(MainViewFragment.this).execute(searchLocation);
-
         if(searchLocation!=null && searchLocation.hasLatitude() && searchLocation.hasLongitude()){
 //                (searchLocation.getLocality() != null || searchLocation.getCountryName()!=null)){
-
+            new WeatherAsync(MainViewFragment.this).execute(searchLocation);
             searchET.setText("");
             if (nearMe){
                 dispText = "Near Me";

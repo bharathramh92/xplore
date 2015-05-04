@@ -282,6 +282,16 @@ public void dispName(){
     }
 
     @Override
+    public void onDestroy() {
+        try{
+            mLocationManager.removeUpdates(mLocListener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         tracker.stopTracking();
@@ -399,7 +409,7 @@ public void dispName(){
 
 
 //        GPS_PROVIDER
-        if(!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        if(!mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Location access not enabled");
@@ -463,7 +473,13 @@ public void dispName(){
             };
 
 //            Log.d("facebookLoginLoc", "using "+currentProvider);
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER , 0, 25000, mLocListener);
+            try {
+                for(String providers : mLocationManager.getProviders(true)) {
+                    mLocationManager.requestLocationUpdates(providers, 0, 25000, mLocListener);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
 
         }

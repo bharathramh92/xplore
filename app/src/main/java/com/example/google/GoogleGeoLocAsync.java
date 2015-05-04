@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.bharathramh.StorageClassCollection.GooglePlacesCS;
 import com.example.bharathramh.xplore.R;
@@ -50,7 +51,6 @@ public class GoogleGeoLocAsync extends AsyncTask<String , Void, Address> {
     @Override
     protected Address doInBackground(String... params) {
         try
-
         {
             Geocoder gc = new Geocoder(mContext);
             List<Address> address = null;
@@ -58,7 +58,6 @@ public class GoogleGeoLocAsync extends AsyncTask<String , Void, Address> {
             if (address != null && address.size() > 0) {
                 return address.get(0);
             }
-
 
         }catch(Exception e){
             e.printStackTrace();

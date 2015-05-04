@@ -69,4 +69,6 @@
     <string name="web_url_not_available">Website link not found</string>
     <string name="phone_number_not_available">Phone number link not found</string>
 
+    <string name="gps_time_out">GPS was timed out. Please enter the location manually.</string>
+
 </resources>
